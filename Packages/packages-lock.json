@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.microsoft.mixedreality.toolkit.extensions": {
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.extensions-2.5.4.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.microsoft.mixedreality.toolkit.foundation": "2.5.4"
+      }
+    },
     "com.microsoft.mixedreality.toolkit.foundation": {
       "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.foundation-2.5.4.tgz",
       "depth": 0,
@@ -14,6 +22,14 @@
       "source": "local-tarball",
       "dependencies": {
         "com.unity.textmeshpro": "2.1.1"
+      }
+    },
+    "com.microsoft.mixedreality.toolkit.tools": {
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.tools-2.5.4.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.microsoft.mixedreality.toolkit.foundation": "2.5.4"
       }
     },
     "com.unity.collab-proxy": {
