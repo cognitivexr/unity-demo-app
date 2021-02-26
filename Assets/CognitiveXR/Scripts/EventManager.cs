@@ -1,4 +1,5 @@
-﻿using cpop_client;
+﻿using System;
+using cpop_client;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
@@ -10,12 +11,10 @@ public class EventManager : MonoBehaviour
 
     public void FireEvent_BBUpdate(CpopData _updateData)
     {
-        if (PublishBBUPdate != null)
-            PublishBBUPdate(_updateData);
+        PublishBBUPdate?.Invoke(_updateData);
     }
-
-    // Start is called before the first frame update
-    void Start()
+    
+    private void Awake()
     {
         Instance = this;
     }

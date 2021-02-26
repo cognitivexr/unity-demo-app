@@ -375,7 +375,7 @@ namespace Microsoft.MixedReality.WorldLocking.Core
 
         private bool LostTrackingCleanup(string message)
         {
-            Debug.Log($"Lost Tracking Frame {Time.frameCount}");
+            //Debug.Log($"Lost Tracking Frame {Time.frameCount}");
             lastTrackingInactiveTime = Time.unscaledTime;
 
             if (newSpongyAnchor)

@@ -34,10 +34,12 @@ public class TestBB : MonoBehaviour
 
         data.Shape.Add(shape);
 
+        StartCoroutine(nameof(SimulateUpdate));
 
         //data = new CpopData(Time.time, "person", new Coordinates(), new List<Coordinates>());
     }
 
+    /*
     // Update is called once per frame
     void Update()
     {
@@ -56,7 +58,8 @@ public class TestBB : MonoBehaviour
             shape.Y = testSize.y;
             shape.Z = testSize.z;
 
-            data.Shape[0] = new Coordinates{ X = testSize.x, Y = testSize.y, Z = testSize.z };
+
+            data.Shape[0] = new Coordinates {X = testSize.x, Y = testSize.y, Z = testSize.z};
 
             EventManager.Instance.FireEvent_BBUpdate(data);
             timeLeft = updateTime;
@@ -65,6 +68,32 @@ public class TestBB : MonoBehaviour
         {
             timeLeft -= Time.deltaTime;
         }
+    }
+    */
+
+    IEnumerator SimulateUpdate()
+    {
+        Vector3 dir = Vector3.forward;
+        Vector3 truePosition = Vector3.zero;
+        while (true)
+        {
+            float dt = GetRandomNumber(0.25f, 0.75f);
+            yield return new WaitForSeconds(dt);
+                
+            dir = Quaternion.Euler(0.0f, GetRandomNumber(-5.0f,10.0f), 0.0f) * dir;
+            truePosition += dir * dt * GetRandomNumber(0.5f, 1.0f);
             
+            data.Position.X = truePosition.x;
+            data.Position.Y = truePosition.y;
+            data.Position.Z = truePosition.z;
+            
+            EventManager.Instance.FireEvent_BBUpdate(data);
+        }
+    }
+    
+    private static System.Random random = new System.Random();
+    private float GetRandomNumber(float minimum, float maximum)
+    { 
+        return (float)random.NextDouble() * (maximum - minimum) + minimum;
     }
 }
