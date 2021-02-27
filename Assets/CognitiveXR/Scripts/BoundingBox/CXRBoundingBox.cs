@@ -81,10 +81,12 @@ public class CXRBoundingBox : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(interpolator is null) return;
+        //if(interpolator is null) return;
 
-        Transform cachedTransform = transform;
-        cachedTransform.position = interpolator.Get(Time.time) ?? (cachedTransform = transform).position;
+        //Transform cachedTransform = transform;
+        //cachedTransform.position = interpolator.Get(Time.time) ?? (cachedTransform = transform).position;
+
+        this.gameObject.transform.position = pos;
         
         BoxCollider boxCollider = GetComponent<BoxCollider>();
         if (boxCollider)
@@ -98,7 +100,7 @@ public class CXRBoundingBox : MonoBehaviour
     {
         Vector3 oldPos = pos;
         float oldTime = time;
-        pos = new Vector3(updateData.Position.X, updateData.Position.Z, updateData.Position.Y) * 0.001f;
+        pos = new Vector3(updateData.Position.Y, updateData.Position.Z, updateData.Position.X) * 0.001f;
         bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Z, updateData.Shape[0].X)* 0.001f;
 
         Debug.LogError("................................  PosX" + pos.x);

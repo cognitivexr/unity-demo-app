@@ -54,7 +54,7 @@ namespace cpop_client
                 .WithTcpServer(_options.Server, _options.Port)
                 .WithCleanSession()
                 .Build();
-            _client.UseApplicationMessageReceivedHandler(DefaultCpopMessageHandler);
+            _client.UseApplicationMessageReceivedHandler(DefaultCpopMessageHandlerJson);
             await _client.ConnectAsync(options, _cancellationTokenSource.Token);
             await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("cpop").Build());
         }
@@ -82,6 +82,33 @@ namespace cpop_client
             {
                 Debug.LogError(exp);
                 
+            }
+        }
+
+        protected void DefaultCpopMessageHandlerJson(MqttApplicationMessageReceivedEventArgs e)
+        {
+            try
+            {
+                Debug.LogError("CPOP HANDLER CALLED!");
+
+                var payload = e.ApplicationMessage.Payload;
+                Debug.LogError("PAYLOAD INIT DONE");
+
+                String jsonText = System.Text.Encoding.UTF8.GetString(payload);
+                Debug.LogError("JSONTEXT CREATED");
+
+                var cpopData = JsonUtility.FromJson<CpopData>(jsonText);
+
+                Debug.LogError("ENQUEUE CPOPDATA...");
+                Queue.Enqueue(cpopData);
+
+                Debug.LogError("CPOPDATA ENQUEUED!");
+
+            }
+            catch (Exception exp)
+            {
+                Debug.LogError(exp);
+
             }
         }
     }
