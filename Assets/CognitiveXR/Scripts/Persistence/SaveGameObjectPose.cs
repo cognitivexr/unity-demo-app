@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
+using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.WorldLocking.Core;
 using UnityEngine;
 
 namespace CognitiveXR.Persistence
@@ -18,8 +21,9 @@ namespace CognitiveXR.Persistence
     
         private string FilePath => Path.Combine(Application.persistentDataPath, guid);
 
-        private void Start()
+        IEnumerator Start()
         {
+            yield return new WaitForSeconds(1.0f);
             Load();
         }
 
@@ -30,19 +34,41 @@ namespace CognitiveXR.Persistence
             if (!string.IsNullOrEmpty(json))
             {
                 SerializedPose data = JsonUtility.FromJson<SerializedPose>(json);
-                Transform cachedTransform = transform;
-                cachedTransform.position = data.position;
-                cachedTransform.rotation = data.rotation;   
+                //Transform cachedTransform = transform;
+                //cachedTransform.position = data.position;
+                //cachedTransform.rotation = data.rotation;
+                
+                SpacePinOrientable spacePinOrientable = GetComponent<SpacePinOrientable>();
+                if (spacePinOrientable)
+                {
+                    //spacePinOrientable.SetLockedPose(new Pose(data.position, data.rotation));
+                    spacePinOrientable.SetLockedPose(new Pose(data.position, data.rotation));
+                }
             }
         }
 
         public void Save()
         {
             Transform cachedTransform = transform;
+            Pose pose = cachedTransform.GetGlobalPose();
+            
+            // transform to sponek
+            SpacePinOrientable spacePinOrientable = GetComponent<SpacePinOrientable>();
+            if (spacePinOrientable)
+            {
+                spacePinOrientable.SetFrozenPose(pose);
+            }
+            
+            
+            pose = cachedTransform.GetGlobalPose();
+            
+            WorldLockingManager wltMgr = WorldLockingManager.GetInstance();
+            Pose savePose = wltMgr.LockedFromFrozen.Multiply(pose);
+            
             SerializedPose data = new SerializedPose
             {
-                position = cachedTransform.position,
-                rotation = cachedTransform.rotation
+                position = savePose.position,
+                rotation = savePose.rotation
             };
 
             string json = JsonUtility.ToJson(data);
@@ -75,5 +101,6 @@ namespace CognitiveXR.Persistence
                 data = string.Empty;
             }
         }
+        
     }
 }

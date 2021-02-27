@@ -93,9 +93,10 @@ GameObject:
   - component: {fileID: 4523891627734512167}
   - component: {fileID: 4523891627734512162}
   - component: {fileID: 4523891627734512165}
-  - component: {fileID: 4523891627734512164}
   - component: {fileID: 4523891627734512171}
   - component: {fileID: 2903693181404875008}
+  - component: {fileID: 4017378830690404676}
+  - component: {fileID: 4523891627734512164}
   m_Layer: 0
   m_Name: WorldAnchor
   m_TagString: Untagged
@@ -310,19 +311,6 @@ MonoBehaviour:
   onHoverExited:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4523891627734512164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4523891627734512163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e347ab673c37e214fa53d836f452eeb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  guid: origin1
 --- !u!114 &4523891627734512171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,6 +339,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48bd8658a55571c418883640f8935c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ObjectsToHide: []
+--- !u!114 &4017378830690404676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4523891627734512163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc82eeae7a27d4d4eb86e0e5036744b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelPositionSource: 0
+  orienter: {fileID: 0}
+--- !u!114 &4523891627734512164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4523891627734512163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e347ab673c37e214fa53d836f452eeb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: origin1
 --- !u!1 &4523891627889144316
 GameObject:
   m_ObjectHideFlags: 0
