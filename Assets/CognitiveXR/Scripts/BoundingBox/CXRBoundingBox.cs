@@ -98,7 +98,7 @@ public class CXRBoundingBox : MonoBehaviour
     {
         Vector3 oldPos = pos;
         float oldTime = time;
-        pos = new Vector3(updateData.Position.X, updateData.Position.Z, updateData.Position.Y);
+        pos = new Vector3(updateData.Position.X, updateData.Position.Z, updateData.Position.Y) * 0.001f;
         bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Y, updateData.Shape[0].Z);
 
         if (interpolator is null)
