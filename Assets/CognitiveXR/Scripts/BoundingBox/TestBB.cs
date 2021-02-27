@@ -7,7 +7,7 @@ public class TestBB : MonoBehaviour
 {
     public Vector3 testSize = new Vector3(1, 2, 1);
     private Coordinates shape = new Coordinates();
-    private Vector3 pos = new Vector3(0, 0, 0);
+    private readonly Vector3 pos = new Vector3(0, 0, 0);
     public float moveX;
     public float moveY;
     public float moveZ;
@@ -73,14 +73,14 @@ public class TestBB : MonoBehaviour
 
     IEnumerator SimulateUpdate()
     {
-        Vector3 dir = Vector3.forward;
+        Vector3 dir = Vector3.right;
         Vector3 truePosition = Vector3.zero;
         while (true)
         {
             float dt = GetRandomNumber(0.25f, 0.75f);
             yield return new WaitForSeconds(dt);
                 
-            dir = Quaternion.Euler(0.0f, GetRandomNumber(-5.0f,10.0f), 0.0f) * dir;
+            dir = Quaternion.Euler(0.0f, 0.0f, GetRandomNumber(-5.0f,10.0f)) * dir;
             truePosition += dir * dt * GetRandomNumber(0.5f, 1.0f);
             
             data.Position.X = truePosition.x;
@@ -91,7 +91,7 @@ public class TestBB : MonoBehaviour
         }
     }
     
-    private static System.Random random = new System.Random();
+    private static readonly System.Random random = new System.Random();
     private float GetRandomNumber(float minimum, float maximum)
     { 
         return (float)random.NextDouble() * (maximum - minimum) + minimum;

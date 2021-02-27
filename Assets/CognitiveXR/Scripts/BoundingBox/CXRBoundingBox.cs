@@ -77,27 +77,28 @@ public class CXRBoundingBox : MonoBehaviour
         //width = _dim.y;
         //depth = _dim.z;
     }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        this.gameObject.GetComponent<MeshRenderer>().enabled = false;
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
         if(interpolator is null) return;
+
+        Transform cachedTransform = transform;
+        cachedTransform.position = interpolator.Get(Time.time) ?? (cachedTransform = transform).position;
         
-        this.gameObject.transform.position = interpolator.Get(Time.time) ?? gameObject.transform.position;
-        this.gameObject.GetComponent<BoxCollider>().size = bbSize;
+        BoxCollider boxCollider = GetComponent<BoxCollider>();
+        if (boxCollider)
+        {
+            boxCollider.size = bbSize;
+            boxCollider.center = new Vector3(-bbSize.x * 0.5f, bbSize.y * 0.5f, 0.0f);
+        }
     }
 
     private void ExtractCpopData(CpopData updateData)
     {
         Vector3 oldPos = pos;
         float oldTime = time;
-        pos = new Vector3(updateData.Position.X, updateData.Position.Y, updateData.Position.Z);
+        pos = new Vector3(updateData.Position.X, updateData.Position.Z, updateData.Position.Y);
         bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Y, updateData.Shape[0].Z);
 
         if (interpolator is null)
