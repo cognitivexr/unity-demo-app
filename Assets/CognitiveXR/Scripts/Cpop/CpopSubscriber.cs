@@ -7,6 +7,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
+using UnityEngine;
 
 namespace cpop_client
 {
@@ -60,13 +61,27 @@ namespace cpop_client
 
         protected void DefaultCpopMessageHandler(MqttApplicationMessageReceivedEventArgs e)
         {
-            var payload = e.ApplicationMessage.Payload;
-
-            var ms = new MemoryStream(payload);
-            using (var reader = new BsonReader(ms))
+            try
             {
-                var cpopData = serializer.Deserialize<CpopData>(reader);
-                Queue.Enqueue(cpopData);
+                Debug.LogError("CPOP HANDLER CALLED!");
+
+                var payload = e.ApplicationMessage.Payload;
+                Debug.LogError("PAYLOAD INIT DONE");
+
+                var ms = new MemoryStream(payload);
+                Debug.LogError("MEMORYSTREAM CREATED");
+                using (var reader = new BsonReader(ms))
+                {
+                    Debug.LogError("...TRYING TO DESERIALIZE...");
+                    var cpopData = serializer.Deserialize<CpopData>(reader);
+                    Debug.LogError("DESERIALIZED CPOP DATA");
+                    Queue.Enqueue(cpopData);
+                }
+            }
+            catch (Exception exp)
+            {
+                Debug.LogError(exp);
+                
             }
         }
     }

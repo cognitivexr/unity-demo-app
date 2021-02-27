@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace cpop_client
 {
+    [System.Serializable]
     public struct CpopData
     {
         public float Timestamp;
@@ -15,6 +16,7 @@ namespace cpop_client
         }
     }
 
+    [System.Serializable]
     public struct Coordinates
     {
         public float X;

@@ -99,7 +99,9 @@ public class CXRBoundingBox : MonoBehaviour
         Vector3 oldPos = pos;
         float oldTime = time;
         pos = new Vector3(updateData.Position.X, updateData.Position.Z, updateData.Position.Y) * 0.001f;
-        bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Y, updateData.Shape[0].Z);
+        bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Z, updateData.Shape[0].X)* 0.001f;
+
+        Debug.LogError("................................  PosX" + pos.x);
 
         if (interpolator is null)
         {
@@ -130,4 +132,9 @@ public class CXRBoundingBox : MonoBehaviour
         EventManager.PublishBBUPdate -= ExtractCpopData;
     }
 
+
+    private void Start()
+    {
+        Debug.LogError("::::::::::::::::::::::::::::::::START::::::::::::::::::::::::::::::::::::::::::");
+    }
 }

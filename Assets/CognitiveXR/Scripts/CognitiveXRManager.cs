@@ -30,6 +30,7 @@ public class CognitiveXRManager : MonoBehaviour
 
         if (cpopSubscriber.Queue.TryDequeue(out CpopData cpopData))
         {
+            Debug.LogError("CPOP DATA DEQUEUED");
             EventManager.Instance.FireEvent_BBUpdate(cpopData);
         }
     }
