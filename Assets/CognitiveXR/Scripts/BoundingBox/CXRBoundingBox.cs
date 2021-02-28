@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 // http://www.mindcontrol.org/~hplus/interpolation.html
@@ -63,6 +64,7 @@ public class CXRBoundingBox : MonoBehaviour
     private float time;
 
     private Interpolator interpolator;
+    public TextMeshPro TextMeshPro;
 
 
     public void SetPosition(Vector3 _pos)
@@ -94,6 +96,15 @@ public class CXRBoundingBox : MonoBehaviour
             boxCollider.size = bbSize;
             boxCollider.center = new Vector3(-bbSize.x * 0.5f, bbSize.y * 0.5f, 0.0f);
         }
+
+        if (TextMeshPro)
+        {
+            TextMeshPro.transform.position = transform.position + new Vector3(-bbSize.x * 0.5f, bbSize.y + 0.2f, 0);
+
+            Vector3 cameraPosition = Camera.main.transform.position;
+            cameraPosition.y = TextMeshPro.transform.position.y;
+            TextMeshPro.transform.rotation = Quaternion.LookRotation(TextMeshPro.transform.position - cameraPosition);
+        }
     }
 
     private void ExtractCpopData(CpopData updateData)
@@ -103,6 +114,7 @@ public class CXRBoundingBox : MonoBehaviour
         pos = new Vector3(updateData.Position.Y, updateData.Position.Z, updateData.Position.X) * 0.001f;
         bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Z, updateData.Shape[0].X)* 0.001f;
 
+        Debug.Log($"{updateData.Shape[0]}");
         Debug.LogError("................................  PosX" + pos.x);
 
         if (interpolator is null)
@@ -117,6 +129,7 @@ public class CXRBoundingBox : MonoBehaviour
         }
         time = Time.time;
 
+        TextMeshPro.text = updateData.Type;
     }
 
     void OnEnable()

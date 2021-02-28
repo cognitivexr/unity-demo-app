@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using cpop_client;
@@ -13,13 +14,16 @@ public class TestBB : MonoBehaviour
     public float moveZ;
     public float updateTime;
     private float timeLeft;
+    
+    Vector3 dir = Vector3.right;
+    Vector3 truePosition = Vector3.zero;
 
     private CpopData data = new CpopData();
 
     // Start is called before the first frame update
     void Start()
     {
-        this.gameObject.GetComponent<CXRBoundingBox>().SetDimensions(testSize);
+        //this.gameObject.GetComponent<CXRBoundingBox>().SetDimensions(testSize);
         timeLeft = updateTime;
 
         data.Position.X = pos.x;
@@ -34,9 +38,19 @@ public class TestBB : MonoBehaviour
 
         data.Shape.Add(shape);
 
-        StartCoroutine(nameof(SimulateUpdate));
+        data.Type = "person";
 
         //data = new CpopData(Time.time, "person", new Coordinates(), new List<Coordinates>());
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(nameof(SimulateUpdate));
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine(nameof(SimulateUpdate));
     }
 
     /*
@@ -73,15 +87,14 @@ public class TestBB : MonoBehaviour
 
     IEnumerator SimulateUpdate()
     {
-        Vector3 dir = Vector3.right;
-        Vector3 truePosition = Vector3.zero;
+
         while (true)
         {
             float dt = GetRandomNumber(0.25f, 0.75f);
             yield return new WaitForSeconds(dt);
                 
             dir = Quaternion.Euler(0.0f, 0.0f, GetRandomNumber(-5.0f,10.0f)) * dir;
-            truePosition += dir * dt * GetRandomNumber(0.5f, 1.0f);
+            truePosition += dir * dt * GetRandomNumber(50.0f, 100.0f);
             
             data.Position.X = truePosition.x;
             data.Position.Y = truePosition.y;
