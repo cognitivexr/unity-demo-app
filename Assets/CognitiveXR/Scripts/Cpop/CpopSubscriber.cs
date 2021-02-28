@@ -63,18 +63,18 @@ namespace cpop_client
         {
             try
             {
-                Debug.LogError("CPOP HANDLER CALLED!");
+                //Debug.LogError("CPOP HANDLER CALLED!");
 
                 var payload = e.ApplicationMessage.Payload;
-                Debug.LogError("PAYLOAD INIT DONE");
+                //Debug.LogError("PAYLOAD INIT DONE");
 
                 var ms = new MemoryStream(payload);
-                Debug.LogError("MEMORYSTREAM CREATED");
+                //Debug.LogError("MEMORYSTREAM CREATED");
                 using (var reader = new BsonReader(ms))
                 {
-                    Debug.LogError("...TRYING TO DESERIALIZE...");
+                    //Debug.LogError("...TRYING TO DESERIALIZE...");
                     var cpopData = serializer.Deserialize<CpopData>(reader);
-                    Debug.LogError("DESERIALIZED CPOP DATA");
+                    //Debug.LogError("DESERIALIZED CPOP DATA");
                     Queue.Enqueue(cpopData);
                 }
             }
@@ -89,20 +89,20 @@ namespace cpop_client
         {
             try
             {
-                Debug.LogError("CPOP HANDLER CALLED!");
+                //Debug.LogError("CPOP HANDLER CALLED!");
 
                 var payload = e.ApplicationMessage.Payload;
-                Debug.LogError("PAYLOAD INIT DONE");
+                //Debug.LogError("PAYLOAD INIT DONE");
 
                 String jsonText = System.Text.Encoding.UTF8.GetString(payload);
-                Debug.LogError("JSONTEXT CREATED");
+                //Debug.LogError("JSONTEXT CREATED");
 
                 var cpopData = JsonUtility.FromJson<CpopData>(jsonText);
 
-                Debug.LogError("ENQUEUE CPOPDATA...");
+                //Debug.LogError("ENQUEUE CPOPDATA...");
                 Queue.Enqueue(cpopData);
 
-                Debug.LogError("CPOPDATA ENQUEUED!");
+                //Debug.LogError("CPOPDATA ENQUEUED!");
 
             }
             catch (Exception exp)

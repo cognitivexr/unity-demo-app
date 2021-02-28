@@ -298,6 +298,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: AnchorGraphVisual
       objectReference: {fileID: 0}
+    - target: {fileID: 4818818914751565137, guid: d2fea6b6d80fd104ba370eec2ee4184f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2fea6b6d80fd104ba370eec2ee4184f, type: 3}
 --- !u!4 &529399935 stripped
@@ -723,6 +728,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1316338944}
   - component: {fileID: 1316338943}
+  - component: {fileID: 1316338945}
   m_Layer: 0
   m_Name: ControlObject
   m_TagString: Untagged
@@ -756,6 +762,74 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1316338945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316338942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45b3eff181cc4244a8a14234096e62fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isFocusRequired: 0
+  keywords:
+  - keyword: Hide
+    response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4523891629545955060}
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1577749890}
+          m_MethodName: set_Active
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - keyword: Show
+    response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4523891629545955060}
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+        - m_Target: {fileID: 1577749890}
+          m_MethodName: set_Active
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+  persistentKeywords: 0
+  speechConfirmationTooltipPrefab: {fileID: 0}
 --- !u!114 &1373495777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -787,6 +861,18 @@ MonoBehaviour:
   wireframeEdgeRadius: 0.01
   wireframeShape: 0
   showWireframe: 1
+--- !u!114 &1577749890 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4523891627734512167, guid: 5ee502f6285167349ab5ad248b96f683,
+    type: 3}
+  m_PrefabInstance: {fileID: 4523891629545955059}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8200a044a5affb843ba856b902d9fd3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1960365514
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,6 +978,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ee502f6285167349ab5ad248b96f683, type: 3}
+--- !u!1 &4523891629545955060 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3288888139176061209, guid: 5ee502f6285167349ab5ad248b96f683,
+    type: 3}
+  m_PrefabInstance: {fileID: 4523891629545955059}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5918729680749283017
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1008,6 +1100,11 @@ PrefabInstance:
       propertyPath: handleProximityEffectConfiguration
       value: 
       objectReference: {fileID: 48222436}
+    - target: {fileID: 7376362175869029491, guid: 0cc68d31027d60e40949923cc1577662,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7376362175869029495, guid: 0cc68d31027d60e40949923cc1577662,
         type: 3}
       propertyPath: m_RootOrder

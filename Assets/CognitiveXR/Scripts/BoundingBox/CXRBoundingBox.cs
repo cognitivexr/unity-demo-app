@@ -115,7 +115,7 @@ public class CXRBoundingBox : MonoBehaviour
         bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Z, updateData.Shape[0].X)* 0.001f;
 
         Debug.Log($"{updateData.Shape[0]}");
-        Debug.LogError("................................  PosX" + pos.x);
+        //Debug.LogError("................................  PosX" + pos.x);
 
         if (interpolator is null)
         {
@@ -129,7 +129,8 @@ public class CXRBoundingBox : MonoBehaviour
         }
         time = Time.time;
 
-        TextMeshPro.text = updateData.Type;
+        double dist = Math.Round((new Vector2(pos.x, pos.z) - new Vector2(Camera.main.transform.position.x, Camera.main.transform.position.z)).magnitude, 2);
+        TextMeshPro.text = (updateData.Type + " \n distance=" + dist);
     }
 
     void OnEnable()
@@ -150,6 +151,6 @@ public class CXRBoundingBox : MonoBehaviour
 
     private void Start()
     {
-        Debug.LogError("::::::::::::::::::::::::::::::::START::::::::::::::::::::::::::::::::::::::::::");
+        //Debug.LogError("::::::::::::::::::::::::::::::::START::::::::::::::::::::::::::::::::::::::::::");
     }
 }
