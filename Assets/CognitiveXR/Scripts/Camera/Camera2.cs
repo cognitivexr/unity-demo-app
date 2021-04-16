@@ -14,7 +14,7 @@ using global::Windows.Perception.Spatial;
 
 public class Camera2 : MonoBehaviour
 {
-    private TcpClient tcpClient;
+    private CpopTcpClient cpopTcpClient;
 #if ENABLE_WINMD_SUPPORT
     private byte[] latestImageBytes;
     private HoloLensCameraStream.Resolution resolution;
@@ -26,7 +26,7 @@ public class Camera2 : MonoBehaviour
 
     private void Start()
     {
-        tcpClient = new TcpClient("192.168.1.104", 4000);
+        cpopTcpClient = new CpopTcpClient("192.168.1.104", 4000);
 
         CameraStreamHelper.Instance.GetVideoCaptureAsync(OnVideoCaptureResourceCreatedCallback);
         
@@ -63,6 +63,8 @@ public class Camera2 : MonoBehaviour
         cameraParams.pixelFormat = CapturePixelFormat.BGRA32;
         cameraParams.rotateImage180Degrees = false; //If your image is upside down, remove this line.
         cameraParams.enableHolograms = false;
+        cameraParams.enableVideoStabilization = false;
+        cameraParams.recordingIndicatorVisible = false;
         
         videoCapture.StartVideoModeAsync(cameraParams, OnVideoModeStarted);
     }
@@ -86,8 +88,8 @@ public class Camera2 : MonoBehaviour
         }
         sample.CopyRawImageDataIntoBuffer(latestImageBytes);
 
-        //byte[] jpg = ImageConversion.EncodeArrayToJPG(latestImageBytes, GraphicsFormat.B8G8R8A8_SRGB, (uint)resolution.width, (uint)resolution.height, 0U, 50);
-        tcpClient.SendImage(latestImageBytes);
+        byte[] jpg = ImageConversion.EncodeArrayToJPG(latestImageBytes, GraphicsFormat.B8G8R8A8_SRGB, (uint)resolution.width, (uint)resolution.height, 0U, 50);
+        cpopTcpClient.SendImage(jpg);
 
         //StartCoroutine(nameof(UploadImage), latestImageBytes);
     }
@@ -98,8 +100,7 @@ public class Camera2 : MonoBehaviour
     {
         //byte[] imageBuffer = FlipVertical(data.ToList(), resolution.width, resolution.height, 4);
         
-        byte[] jpg =
- ImageConversion.EncodeArrayToJPG(data, GraphicsFormat.B8G8R8A8_SRGB, (uint)resolution.width, (uint)resolution.height, 0U, 50);
+        byte[] jpg = ImageConversion.EncodeArrayToJPG(data, GraphicsFormat.B8G8R8A8_SRGB, (uint)resolution.width, (uint)resolution.height, 0U, 50);
         
         WWWForm form = new WWWForm();
         form.AddBinaryData("asset", jpg, $"picture_{resolution.width}_{resolution.height}_{imageCount}.jpg", "images/png");

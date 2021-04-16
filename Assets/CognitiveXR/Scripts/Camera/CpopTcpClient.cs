@@ -1,44 +1,51 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-#if UNITY_UWP
+using System.IO;
+#if WINDOWS_UWP
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 #endif
+
 using UnityEngine;
 
-public class TcpClient
+public class CpopTcpClient
 {
-#if UNITY_UWP
+#if WINDOWS_UWP
     private Stream stream;
     private StreamWriter streamWriter;
 #endif
     
-    public TcpClient(string ip, int port)
+    public CpopTcpClient(string ip, int port)
     {
-#if UNITY_UWP
+#if WINDOWS_UWP
         Task.Run(async () => {
             StreamSocket socket = new StreamSocket();
-            await socket.ConnectAsync(new HostName(IP),port.ToString());
+            await socket.ConnectAsync(new HostName(ip),port.ToString());
             stream = socket.OutputStream.AsStreamForWrite();
-            writer = new StreamWriter(stream);
+            streamWriter = new StreamWriter(stream);
             StreamReader reader = new StreamReader(socket.InputStream.AsStreamForRead());
             try
             {
                 string data = await reader.ReadToEndAsync();
             }
             catch (Exception) { }
-            writer = null;
+            streamWriter = null;
         });
 #endif
     }
     
     public void SendImage(byte[] image)
     {
-#if UNITY_UWP
+        int length = image.Length;
+        byte[] encodedLength = BitConverter.GetBytes(length);
+
+#if WINDOWS_UWP
         if (stream != null) Task.Run(async () =>
         {
+            await stream.WriteAsync(encodedLength, 0, 4);
             await stream.WriteAsync(image, 0, image.Length);
             await stream.FlushAsync();
         });

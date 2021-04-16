@@ -68,6 +68,8 @@ namespace HoloLensCameraStream
 			get {	return videoStabilizationBufferSize > 0; }
 			set {	videoStabilizationBufferSize = value ? 15 : 0; }
 		}
+        
+        public bool recordingIndicatorVisible;
 
         public CameraParameters(
             CapturePixelFormat pixelFormat = CapturePixelFormat.BGRA32,
@@ -83,6 +85,7 @@ namespace HoloLensCameraStream
 			this.rotateImage180Degrees = rotateImage180Degrees;
 			videoStabilizationBufferSize = 0;
 			hologramOpacity = 0.0f;
+			recordingIndicatorVisible = false;
         }
     }
 }

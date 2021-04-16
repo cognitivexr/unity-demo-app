@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Threading;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using UnityEngine;
 
 namespace cpop_client
@@ -23,7 +20,6 @@ namespace cpop_client
         private CpopServerOptions _options;
         private CancellationTokenSource _cancellationTokenSource;
         private IMqttClient _client;
-        private JsonSerializer serializer = new JsonSerializer();
 
         public CpopSubscriber(ConcurrentQueue<CpopData> queue, CpopServerOptions options)
         {
@@ -57,32 +53,6 @@ namespace cpop_client
             _client.UseApplicationMessageReceivedHandler(DefaultCpopMessageHandlerJson);
             await _client.ConnectAsync(options, _cancellationTokenSource.Token);
             await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("cpop").Build());
-        }
-
-        protected void DefaultCpopMessageHandler(MqttApplicationMessageReceivedEventArgs e)
-        {
-            try
-            {
-                //Debug.LogError("CPOP HANDLER CALLED!");
-
-                var payload = e.ApplicationMessage.Payload;
-                //Debug.LogError("PAYLOAD INIT DONE");
-
-                var ms = new MemoryStream(payload);
-                //Debug.LogError("MEMORYSTREAM CREATED");
-                using (var reader = new BsonReader(ms))
-                {
-                    //Debug.LogError("...TRYING TO DESERIALIZE...");
-                    var cpopData = serializer.Deserialize<CpopData>(reader);
-                    //Debug.LogError("DESERIALIZED CPOP DATA");
-                    Queue.Enqueue(cpopData);
-                }
-            }
-            catch (Exception exp)
-            {
-                Debug.LogError(exp);
-                
-            }
         }
 
         protected void DefaultCpopMessageHandlerJson(MqttApplicationMessageReceivedEventArgs e)
