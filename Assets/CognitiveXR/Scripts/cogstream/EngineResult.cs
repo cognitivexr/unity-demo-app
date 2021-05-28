@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public struct EngineResult
+public class EngineResult
 {
     public uint frameId;
-    public DateTime timestamp;
+    public uint seconds;
+    public uint nanoseconds;
     public string result;
 }

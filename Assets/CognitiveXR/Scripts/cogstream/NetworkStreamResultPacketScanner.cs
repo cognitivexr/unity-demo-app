@@ -1,15 +1,29 @@
 ﻿
 using System;
 using System.Net.Sockets;
+using System.Threading;
 using UnityEngine;
 
 public class NetworkStreamResultPacketScanner : IResultPacketScanner
 {
-    private NetworkStream networkStream;
+    private readonly NetworkStream networkStream;
+    private readonly Thread thread;
+    public OnReceivedPacket onReceivedPacket { get; set; }
 
     public NetworkStreamResultPacketScanner(NetworkStream stream)
     {
         networkStream = stream;
+        thread = new Thread(Run);
+        thread.Start();
+    }
+
+    private void Run()
+    {
+        for (;;)
+        {
+            ResultPacket resultPacket = Next();
+            onReceivedPacket?.Invoke(resultPacket);
+        }
     }
     
     public ResultPacket Next()
@@ -18,7 +32,7 @@ public class NetworkStreamResultPacketScanner : IResultPacketScanner
 
         int readBytes = networkStream.Read(buffer, 0, 20);
         
-        Debug.Assert(readBytes == 20);
+        Debug.Assert(readBytes == 20); // TODO: handle errors
         
         ResultPacket resultPacket = new ResultPacket();
 
@@ -34,4 +48,6 @@ public class NetworkStreamResultPacketScanner : IResultPacketScanner
 
         return resultPacket;
     }
+
+
 }
