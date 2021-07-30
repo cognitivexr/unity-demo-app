@@ -7,8 +7,11 @@ using TMPro;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Networking;
 using UnityEngine.XR.WSA;
+using CapturePixelFormat = HoloLensCameraStream.CapturePixelFormat;
 #if WINDOWS_UWP
 using global::Windows.Perception.Spatial;
+using UnityEngine.Windows.WebCam;
+
 #endif // WINDOWS_UWP
 
 
@@ -29,6 +32,16 @@ public class HLImageSenderComponent : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI textfield;
 
+    private GameObject _picture;
+    private Renderer _pictureRenderer;
+    private Texture2D _pictureTexture;
+    
+    private class SampleStruct
+    {
+        public float[] camera2WorldMatrix, projectionMatrix;
+        public byte[] data;
+    }
+    
 #if WINDOWS_UWP
     private void Start()
     {
@@ -62,8 +75,11 @@ public class HLImageSenderComponent : MonoBehaviour
     {
         CameraStreamHelper.Instance.GetVideoCaptureAsync(OnVideoCaptureResourceCreatedCallback);
 
-        spatialCoordinateSystemPtr =
- Microsoft.MixedReality.Toolkit.WindowsMixedReality.WindowsMixedRealityUtilities.UtilitiesProvider.ISpatialCoordinateSystemPtr;
+        spatialCoordinateSystemPtr = UnityEngine.XR.WSA.WorldManager.GetNativeISpatialCoordinateSystemPtr();
+
+        _picture = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        _pictureRenderer = _picture.GetComponent<Renderer>() as Renderer;
+        _pictureRenderer.material = new Material(Shader.Find("AR/HolographicImageBlend"));
     }
     
     private void OnVideoCaptureResourceCreatedCallback(HoloLensCameraStream.VideoCapture captureobject)
@@ -86,6 +102,9 @@ public class HLImageSenderComponent : MonoBehaviour
         cameraParams.enableVideoStabilization = false;
         cameraParams.recordingIndicatorVisible = false;
         
+        UnityEngine.WSA.Application.InvokeOnAppThread(() => { _pictureTexture = new Texture2D(resolution.width, resolution.height, TextureFormat.BGRA32, false); }, false);
+
+
         videoCapture.StartVideoModeAsync(cameraParams, OnVideoModeStarted);
     }
     
@@ -123,10 +142,9 @@ public class HLImageSenderComponent : MonoBehaviour
     
     void OnFrameSampleAcquired(VideoCaptureSample sample)
     {
-        if (latestImageBytes == null || latestImageBytes.Length < sample.dataLength)
-        {
+         if(latestImageBytes == null || latestImageBytes.Length < sample.dataLength)
             latestImageBytes = new byte[sample.dataLength];
-        }
+
         sample.CopyRawImageDataIntoBuffer(latestImageBytes);
 
         Frame frame = new Frame
@@ -140,6 +158,45 @@ public class HLImageSenderComponent : MonoBehaviour
 
         JpgSendChannel jpgSendChannel = engineClient.GetSendChannel<JpgSendChannel>();
         jpgSendChannel?.Send(frame);
+
+        SampleStruct s = new SampleStruct();
+        s.data = latestImageBytes;
+
+        // Get the cameraToWorldMatrix and projectionMatrix
+        if(!sample.TryGetCameraToWorldMatrix(out s.camera2WorldMatrix) || !sample.TryGetProjectionMatrix(out s.projectionMatrix))
+            return;
+
+        sample.Dispose();
+
+        Matrix4x4 camera2WorldMatrix = LocatableCameraUtils.ConvertFloatArrayToMatrix4x4(s.camera2WorldMatrix);
+        Matrix4x4 projectionMatrix = LocatableCameraUtils.ConvertFloatArrayToMatrix4x4(s.projectionMatrix);
+
+        UnityEngine.WSA.Application.InvokeOnAppThread(() =>
+        {
+
+            // Upload bytes to texture
+            _pictureTexture.LoadRawTextureData(s.data);
+            _pictureTexture.wrapMode = TextureWrapMode.Clamp;
+            _pictureTexture.Apply();
+
+            // Set material parameters
+            _pictureRenderer.sharedMaterial.SetTexture("_MainTex", _pictureTexture);
+            _pictureRenderer.sharedMaterial.SetMatrix("_WorldToCameraMatrix", camera2WorldMatrix.inverse);
+            _pictureRenderer.sharedMaterial.SetMatrix("_CameraProjectionMatrix", projectionMatrix);
+            _pictureRenderer.sharedMaterial.SetFloat("_VignetteScale", 0f);
+
+            Vector3 inverseNormal = -camera2WorldMatrix.GetColumn(2);
+            // Position the canvas object slightly in front of the real world web camera.
+            Vector3 imagePosition = camera2WorldMatrix.GetColumn(3) - camera2WorldMatrix.GetColumn(2);
+
+            _picture.transform.position = imagePosition;
+            _picture.transform.rotation = Quaternion.LookRotation(inverseNormal, camera2WorldMatrix.GetColumn(1));
+
+        }, false);
     }
+#else
+    
 #endif // WINDOWS_UWP
+
+
 }
