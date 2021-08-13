@@ -10,7 +10,14 @@ public abstract class ResultReceiveChannel
     public bool TryDequeue<T>(out T engineResult) where T : EngineResult
     {
         bool success = engineResultQueue.TryDequeue(out EngineResult result);
-        engineResult = (T) result;
+        if (success)
+        {
+            engineResult = (T) result;
+        }
+        else
+        {
+            engineResult = null;
+        }
         return success;
     }
 }

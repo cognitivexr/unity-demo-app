@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Windows.WebCam;
 
@@ -22,6 +23,7 @@ public class ImageSenderComponent : MonoBehaviour
     public int port;
 
     private Texture2D Picture;
+    [SerializeField] private TextMeshProUGUI textfield;
     
     private void Start()
     {
@@ -32,10 +34,15 @@ public class ImageSenderComponent : MonoBehaviour
     {
         ResultReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<ResultReceiveChannel>();
         if (receiveChannel == null) return;
-        
-        while (receiveChannel.TryDequeue(out EngineResult engineResult))
+
+        while (receiveChannel.TryDequeue<FaceEngineResult>(out FaceEngineResult engineResult))
         {
             Debug.Log(engineResult.result);
+            
+            if (engineResult.emotions.Count > 0)
+            {
+                textfield.text = engineResult.emotions[0].label;
+            }
         }
     }
     
@@ -81,7 +88,7 @@ public class ImageSenderComponent : MonoBehaviour
 
         JpgSendChannel sendChannel =
             new JpgSendChannel(cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight);
-        DebugReceiveChannel receiveChannel = new DebugReceiveChannel();
+        FaceReceiveChannel receiveChannel = new FaceReceiveChannel();
 
         engineClient = new EngineClient(streamSpec, sendChannel, receiveChannel);
         engineClient.Open();
