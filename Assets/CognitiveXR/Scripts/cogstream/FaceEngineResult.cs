@@ -6,19 +6,12 @@ using System.Collections.Generic;
 public class FaceEngineResult : EngineResult
 {
     public List<int> face;
-    public List<Emotions> emotions;
+    public List<Emotion> emotions;
 }
 
 [System.Serializable]
-public struct Emotions
+public struct Emotion
 {
     public float probability;
     public string label;
-}
-
-[System.Serializable]
-public struct FaceEngineResultData
-{
-    public List<int> face;
-    public List<Emotions> emotions;
 }
