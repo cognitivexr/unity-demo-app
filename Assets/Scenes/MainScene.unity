@@ -1049,7 +1049,7 @@ PrefabInstance:
     - target: {fileID: 5918729680906291342, guid: 0c8e6e0a2dd447e43b9dc6951c7d0722,
         type: 3}
       propertyPath: CpopServerAddress
-      value: 192.168.0.41
+      value: 192.168.1.50
       objectReference: {fileID: 0}
     - target: {fileID: 5918729680906291343, guid: 0c8e6e0a2dd447e43b9dc6951c7d0722,
         type: 3}

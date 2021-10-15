@@ -112,7 +112,7 @@ public class CXRBoundingBox : MonoBehaviour
         Vector3 oldPos = pos;
         float oldTime = time;
         pos = new Vector3(updateData.Position.Y, updateData.Position.Z, updateData.Position.X) * 0.001f;
-        bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Z, updateData.Shape[0].X)* 0.001f;
+        bbSize = new Vector3(updateData.Shape[0].X, updateData.Shape[0].Z, updateData.Shape[0].Y)* 0.001f;
 
         Debug.Log($"{updateData.Shape[0]}");
         //Debug.LogError("................................  PosX" + pos.x);
