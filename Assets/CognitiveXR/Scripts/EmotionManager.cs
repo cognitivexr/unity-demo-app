@@ -25,9 +25,7 @@ public class EmotionManager : MonoBehaviour
     {
         CleanupOldEmotionBoxes(info.frameId);
 
-        var CameraTransform = Camera.main.transform;
-        
-        GameObject emotionBoxGO = Instantiate(EmotionBoxPrefab, CameraTransform);
+        GameObject emotionBoxGO = Instantiate(EmotionBoxPrefab, info.cameraPose.position, Quaternion.identity);// info.cameraPose.rotation );
 
         EmotionBox emotionBox = emotionBoxGO.GetComponent<EmotionBox>();
 

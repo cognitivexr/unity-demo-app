@@ -41,17 +41,22 @@ public class HLImageSenderComponent : MonoBehaviour
     private GameObject _picture;
     private Renderer _pictureRenderer;
     private Texture2D _pictureTexture;
-    public XRLineRenderer lineRenderer;
     
     private class SampleStruct
     {
         public Matrix4x4 camera2WorldMatrix, projectionMatrix;
+        public Pose cameraPose;
     }
 
     private Dictionary<uint, SampleStruct> spatialInfo = new Dictionary<uint, SampleStruct>();
         
     public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
     public OnEmotionDetectedDelegate OnEmotionDetected;
+
+    void foo()
+    {
+        
+    }
     
 #if WINDOWS_UWP
     private void Start()
@@ -96,7 +101,8 @@ public class HLImageSenderComponent : MonoBehaviour
                         pos1, pos2, pos3, pos4
                     },
                     DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
-                    frameId = engineResult.frameId
+                    frameId = engineResult.frameId,
+                    cameraPose = s.cameraPose
                 });
                 
                 textfield.text = engineResult.frameId.ToString();
@@ -189,7 +195,12 @@ catch (Exception e)
          if(latestImageBytes == null || latestImageBytes.Length < sample.dataLength)
             latestImageBytes = new byte[sample.dataLength];
 
+
         frameId++;
+    
+        if((frameId%15) != 0)
+            return;
+
         sample.CopyRawImageDataIntoBuffer(latestImageBytes);
 
         // Get the cameraToWorldMatrix and projectionMatrix
@@ -204,8 +215,34 @@ catch (Exception e)
         SampleStruct s = new SampleStruct();
         s.camera2WorldMatrix = camera2WorldMatrix;
         s.projectionMatrix = projectionMatrix;
+        s.cameraPose = new Pose(Camera.main.transform.position, Camera.main.transform.rotation);
 
         spatialInfo.Add(frameId, s);
+/*
+        Vector3 pos1 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
+            new Vector2(0, 0));
+        Vector3 pos2 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
+            new Vector2(0,  resolution.height));
+        Vector3 pos4 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
+            new Vector2(resolution.width, 0));
+        Vector3 pos3 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
+            new Vector2( resolution.width,  resolution.height));
+
+        UnityEngine.WSA.Application.InvokeOnAppThread(() =>
+        {
+                OnEmotionDetected(new EmotionBox.EmotionInfo()
+                {
+                    Bounds = new List<Vector3>()
+                    {
+                        pos1, pos2, pos3, pos4
+                    },
+                    DominantEmotion = "",
+                    frameId = frameId,
+                    cameraPose = s.cameraPose
+                });
+        }, false);
+*/
+
         
         if (ShowDebugCameraImage)
         {
