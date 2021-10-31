@@ -9,7 +9,7 @@ public class NetworkStreamFrameWriter : IFramePacketWriter
     private EventWaitHandle eventWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
     private readonly NetworkStream networkStream;
     private ConcurrentQueue<FramePacket> framePacketQueue = new ConcurrentQueue<FramePacket>();
-
+    private bool isRunning = true;
     public NetworkStreamFrameWriter(NetworkStream stream)
     {
         networkStream = stream;
@@ -22,17 +22,23 @@ public class NetworkStreamFrameWriter : IFramePacketWriter
         eventWaitHandle.Reset();
         eventWaitHandle.WaitOne();
 
-        for (;;)
+        while (isRunning)
         {
             // wait for data to send 
             eventWaitHandle.Reset();
-            
+
             while (framePacketQueue.TryDequeue(out FramePacket framePacket))
             {
                 byte[] buffer = ToBuffer(framePacket);
                 networkStream.Write(buffer, 0, buffer.Length);
             }
         }
+    }
+
+    public void Shutdown()
+    {
+        isRunning = false;
+        eventWaitHandle.Set();
     }
 
     public void Write(FramePacket framePacket)

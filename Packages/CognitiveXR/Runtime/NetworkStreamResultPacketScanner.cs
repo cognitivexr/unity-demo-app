@@ -2,12 +2,12 @@
 using System;
 using System.Net.Sockets;
 using System.Threading;
-using UnityEngine;
 
 public class NetworkStreamResultPacketScanner : IResultPacketScanner
 {
     private readonly NetworkStream networkStream;
     private readonly Thread thread;
+    private bool isRunning = true;
     public OnReceivedPacket onReceivedPacket { get; set; }
 
     public NetworkStreamResultPacketScanner(NetworkStream stream)
@@ -19,11 +19,16 @@ public class NetworkStreamResultPacketScanner : IResultPacketScanner
 
     private void Run()
     {
-        for (;;)
+        while (isRunning)
         {
             ResultPacket resultPacket = Next();
             onReceivedPacket?.Invoke(resultPacket);
         }
+    }
+
+    public void Shudown()
+    {
+        isRunning = false;
     }
     
     public ResultPacket Next()
@@ -32,7 +37,8 @@ public class NetworkStreamResultPacketScanner : IResultPacketScanner
 
         int readBytes = networkStream.Read(buffer, 0, 20);
         
-        Debug.Assert(readBytes == 20); // TODO: handle errors
+        // TODO: handle errors
+        //Debug.Assert(readBytes == 20); 
         
         ResultPacket resultPacket = new ResultPacket();
 

@@ -1,0 +1,30 @@
+{
+  "name": "at.cognitivexr.cogstream",
+  "displayName": "CognitiveXR",
+  "version": "0.0.1-preview",
+  "unity": "2019.3",
+  "description": "Package Sample.",
+  "dependencies": {
+  },
+  "keywords": [
+    "keyword1",
+    "keyword2",
+    "keyword3"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Stan's Assets",
+    "email": "stan@stansassets.com",
+    "url": "https://stansassets.com/"
+  },
+  
+  "homepage": "https://api.stansassets.com/",
+  "bugs": {
+    "url": "https://github.com/StansAssets/com.stansassets.foundation/issues",
+    "email" : "support@stansassets.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cognitivexr/cognitivexr-unity-client.git"
+  }
+}

@@ -53,11 +53,6 @@ public class HLImageSenderComponent : MonoBehaviour
     public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
     public OnEmotionDetectedDelegate OnEmotionDetected;
 
-    void foo()
-    {
-        
-    }
-    
 #if WINDOWS_UWP
     private void Start()
     {
@@ -198,6 +193,7 @@ catch (Exception e)
 
         frameId++;
     
+// TODO: remove
         if((frameId%15) != 0)
             return;
 
@@ -218,32 +214,7 @@ catch (Exception e)
         s.cameraPose = new Pose(Camera.main.transform.position, Camera.main.transform.rotation);
 
         spatialInfo.Add(frameId, s);
-/*
-        Vector3 pos1 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-            new Vector2(0, 0));
-        Vector3 pos2 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-            new Vector2(0,  resolution.height));
-        Vector3 pos4 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-            new Vector2(resolution.width, 0));
-        Vector3 pos3 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-            new Vector2( resolution.width,  resolution.height));
 
-        UnityEngine.WSA.Application.InvokeOnAppThread(() =>
-        {
-                OnEmotionDetected(new EmotionBox.EmotionInfo()
-                {
-                    Bounds = new List<Vector3>()
-                    {
-                        pos1, pos2, pos3, pos4
-                    },
-                    DominantEmotion = "",
-                    frameId = frameId,
-                    cameraPose = s.cameraPose
-                });
-        }, false);
-*/
-
-        
         if (ShowDebugCameraImage)
         {
             UnityEngine.WSA.Application.InvokeOnAppThread(() =>

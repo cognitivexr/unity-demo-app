@@ -51,9 +51,11 @@ public class FaceReceiveChannel : ResultReceiveChannel
 
         for (int i = 0; i < jsonNode.Count; ++i)
         {
-            Emotion emotion = new Emotion();
-            emotion.label = jsonNode[i]["label"].ToString();
-            emotion.probability = jsonNode[i]["probability"].AsFloat;
+            Emotion emotion = new Emotion
+            {
+                label = jsonNode[i]["label"].ToString(),
+                probability = jsonNode[i]["probability"].AsFloat
+            };
             emotions.Add(emotion);
         }
         

@@ -90,7 +90,7 @@ public class ImageSenderComponent : MonoBehaviour
             new JpgSendChannel(cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight);
         FaceReceiveChannel receiveChannel = new FaceReceiveChannel();
 
-        engineClient = new EngineClient(streamSpec, sendChannel, receiveChannel);
+        engineClient = new EngineClient(streamSpec, sendChannel, receiveChannel, 42);
         engineClient.Open();
     }
 

@@ -7,5 +7,4 @@ public struct ResultPacket
     public uint seconds;
     public uint nanoseconds;
     public byte[] data;
-
 }
