@@ -58,6 +58,23 @@ public class HLImageSenderComponent : MonoBehaviour
     {
         CreateCamera();
     }
+
+    OnApplicationFocus(bool hasFocus)
+    {
+        if(hasFocus == false)
+        {
+            if(videoCapture != null)
+            {
+                videoCapture.StopRecordingAsync(OnStoppedRecordingVideo);
+            }
+        }
+    }
+
+    void OnStoppedRecordingVideo(VideoCapture.VideoCaptureResult result)
+    {
+        Debug.Log("Stopped Recording Video!");
+        m_VideoCapture.StopVideoModeAsync(OnStoppedVideoCaptureMode);
+    }
     
     private void OnDestroy()
     {

@@ -4,10 +4,10 @@ using SimpleJSON;
 
 public class FaceReceiveChannel : ResultReceiveChannel
 {
-    public override void Receive(ResultPacket resultPacket)
+    protected override EngineResult Receive(ResultPacket resultPacket)
     {
         string jsonText = System.Text.Encoding.UTF8.GetString(resultPacket.data);
-        if(string.IsNullOrEmpty(jsonText) || jsonText.Length <= 2) return; // empty data 
+        if(string.IsNullOrEmpty(jsonText) || jsonText.Length <= 2) return null; // TODO: error handling
 
         JSONNode json = JSON.Parse(jsonText);
         int facesNumber = json.AsArray.Count;
@@ -28,8 +28,8 @@ public class FaceReceiveChannel : ResultReceiveChannel
                 emotions = EmotionsFromJson(emotions),
                 face = FaceFromJson(faces)
             };
-            
-            engineResultQueue.Enqueue(engineResult);
+
+            return engineResult;
         }
     }
 

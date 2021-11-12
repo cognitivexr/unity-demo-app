@@ -1,7 +1,9 @@
 ﻿
+using System.Threading.Tasks;
+
 public class DebugReceiveChannel : ResultReceiveChannel
 {
-    public override void Receive(ResultPacket resultPacket)
+    protected override EngineResult Receive(ResultPacket resultPacket)
     {
         EngineResult engineResult = new EngineResult()
         {
@@ -11,7 +13,7 @@ public class DebugReceiveChannel : ResultReceiveChannel
             result = System.Text.Encoding.UTF8.GetString(resultPacket.data),
         };
 
-        engineResultQueue.Enqueue(engineResult);
+        return engineResult;
     }
-    
+
 }

@@ -1,12 +1,19 @@
 ﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 
 public abstract class ResultReceiveChannel
 {
+    protected IResultPacketScanner resultPacketScanner;
     protected readonly ConcurrentQueue<EngineResult> engineResultQueue = new ConcurrentQueue<EngineResult>();
 
-    public abstract void Receive(ResultPacket resultPacket);
+    protected abstract EngineResult Receive(ResultPacket resultPacket);
 
+    public void SetResultPacketScanner(IResultPacketScanner resultPacketScanner)
+    {
+        this.resultPacketScanner = resultPacketScanner;
+    }
+    
     public bool TryDequeue<T>(out T engineResult) where T : EngineResult
     {
         bool success = engineResultQueue.TryDequeue(out EngineResult result);
@@ -19,5 +26,18 @@ public abstract class ResultReceiveChannel
             engineResult = null;
         }
         return success;
+    }
+
+    public async Task<T> Next<T>() where T : EngineResult
+    {
+        if (resultPacketScanner != null)
+        {
+            ResultPacket resultPacket = await resultPacketScanner.Next();
+            EngineResult engineResult = Receive(resultPacket);
+            return (T) engineResult;
+        }
+        
+        // TODO: error handling
+        return null;
     }
 }

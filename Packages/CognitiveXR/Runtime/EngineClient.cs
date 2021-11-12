@@ -3,8 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using UnityEngine;
-
 
 public class EngineClient
 {
@@ -25,7 +23,7 @@ public class EngineClient
         this.streamId = streamId;
     }
 
-    public void Open()
+    public async void Open()
     {
         // TODO: implement exception handling
 
@@ -33,45 +31,31 @@ public class EngineClient
 
         IPAddress ipAddress = IPAddress.Parse(parts[0]);
         IPEndPoint endPoint = new IPEndPoint(ipAddress, int.Parse(parts[1]));
+
         client = new TcpClient();
+        NetworkStream netstream = client.GetStream();
         {
-            try
-            {
-                client.Connect(endPoint);
-                networkStream = client.GetStream();
-                {
-                    string json = streamSpecToJson(streamSpec);
+            await client.ConnectAsync(endPoint.Address, endPoint.Port);
 
-                    byte[] jsonAsBytes = Encoding.UTF8.GetBytes(json);
-                    byte[] lengthInByte = BitConverter.GetBytes(jsonAsBytes.Length);
+            string json = streamSpecToJson(streamSpec);
 
-                    byte[] data = new byte[4 + jsonAsBytes.Length];
-                    Buffer.BlockCopy(lengthInByte, 0, data, 0, lengthInByte.Length);
-                    Buffer.BlockCopy(jsonAsBytes, 0, data, 4, jsonAsBytes.Length);
+            byte[] jsonAsBytes = Encoding.UTF8.GetBytes(json);
+            byte[] lengthInByte = BitConverter.GetBytes(jsonAsBytes.Length);
 
-                    networkStream.Write(data, 0, data.Length);
-                    networkStream.Flush();
+            byte[] data = new byte[4 + jsonAsBytes.Length];
+            Buffer.BlockCopy(lengthInByte, 0, data, 0, lengthInByte.Length);
+            Buffer.BlockCopy(jsonAsBytes, 0, data, 4, jsonAsBytes.Length);
 
-                    NetworkStreamFrameWriter frameWriter = new NetworkStreamFrameWriter(networkStream);
-                    sendChannel.SetWriter(frameWriter);
-                    packetScanner =
-                        new NetworkStreamResultPacketScanner(networkStream); // todo: do we need to save it here?
-                    packetScanner.onReceivedPacket += resultReceiveChannel.Receive;
-                }
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e);
-            }
+            await netstream.WriteAsync(data, 0, data.Length);
+            await netstream.FlushAsync();
+
+            NetworkStreamFrameWriter frameWriter = new NetworkStreamFrameWriter(networkStream);
+            sendChannel.SetWriter(frameWriter);
+            packetScanner = new NetworkStreamResultPacketScanner(networkStream); 
+            resultReceiveChannel.SetResultPacketScanner(packetScanner);
         }
     }
-
-    public void Shutdown()
-    {
-        
-        client.Close();
-    }
-
+    
     public bool isConnected()
     {
         return (client != null ) && (client.Connected);
