@@ -15,8 +15,6 @@ public class EmotionManager : MonoBehaviour
     private void Awake()
     {
         Debug.Assert(EmotionBoxPrefab != null);
-        Debug.Assert(emotionDetectionComponent != null);
-        
         emotionDetectionComponent.OnEmotionDetected += OnEmotionDetected;
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using cpop_client;
+using CognitiveXR.Cpop;
 using UnityEngine;
 
 public class CognitiveXRManager : MonoBehaviour

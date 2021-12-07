@@ -1,5 +1,5 @@
 ﻿using System;
-using cpop_client;
+using CognitiveXR.Cpop;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
