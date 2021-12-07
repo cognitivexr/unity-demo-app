@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using SimpleJSON;
-
+using CognitiveXR.CogStream;
 
 public class FaceReceiveChannel : ResultReceiveChannel
 {
-    protected override EngineResult Receive(ResultPacket resultPacket)
+    protected override List<EngineResult> ParseResultPacket(ResultPacket resultPacket)
     {
         string jsonText = System.Text.Encoding.UTF8.GetString(resultPacket.data);
         if(string.IsNullOrEmpty(jsonText) || jsonText.Length <= 2) return null; // TODO: error handling
@@ -12,6 +12,8 @@ public class FaceReceiveChannel : ResultReceiveChannel
         JSONNode json = JSON.Parse(jsonText);
         int facesNumber = json.AsArray.Count;
         var arr = json.AsArray;
+
+        List<EngineResult> results = new List<EngineResult>();
 
         for (int i = 0; i < facesNumber; ++i)
         {
@@ -29,8 +31,10 @@ public class FaceReceiveChannel : ResultReceiveChannel
                 face = FaceFromJson(faces)
             };
 
-            return engineResult;
+            results.Add(engineResult);
         }
+
+        return results;
     }
 
     private List<int> FaceFromJson(JSONNode jsonNode)

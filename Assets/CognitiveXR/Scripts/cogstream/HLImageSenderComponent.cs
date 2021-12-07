@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using HoloLensCameraStream;
 using TMPro;
+using CognitiveXR.CogStream;
 using Unity.XRTools.Rendering;
 using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering;
