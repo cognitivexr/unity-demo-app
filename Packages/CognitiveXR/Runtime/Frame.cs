@@ -1,10 +1,13 @@
 ﻿using System;
 
-public struct Frame
+namespace CognitiveXR.CogStream
 {
-    public uint frameId;
-    public DateTime timestamp;
-    public int width;
-    public int height;
-    public byte[] rawFrame;
+    public struct Frame
+    {
+        public uint frameId;
+        public DateTime timestamp;
+        public int width;
+        public int height;
+        public byte[] rawFrame;
+    }
 }

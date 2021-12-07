@@ -1,5 +1,8 @@
 ﻿
-public interface IFramePacketWriter
+namespace CognitiveXR.CogStream
 {
-    void Write(FramePacket framePacket);
+    public interface IFramePacketWriter
+    {
+        void Write(FramePacket framePacket);
+    }
 }

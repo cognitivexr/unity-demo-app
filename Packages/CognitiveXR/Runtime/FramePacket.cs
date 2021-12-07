@@ -1,11 +1,13 @@
 ﻿
-
-public struct FramePacket
+namespace CognitiveXR.CogStream
 {
-    public uint streamId;
-    public uint frameId;
-    public uint seconds;
-    public uint nanoseconds;
-    public byte[] metadata;
-    public byte[] data;
+    public struct FramePacket
+    {
+        public uint streamId;
+        public uint frameId;
+        public uint seconds;
+        public uint nanoseconds;
+        public byte[] metadata;
+        public byte[] data;
+    }
 }

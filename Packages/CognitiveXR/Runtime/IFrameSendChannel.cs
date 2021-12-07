@@ -1,7 +1,12 @@
 ﻿
-public interface IFrameSendChannel
+namespace CognitiveXR.CogStream
 {
-     void Send(Frame frame);
+    public interface IFrameSendChannel
+    {
+        void Send(Frame frame);
 
-    void SetWriter(IFramePacketWriter writer);
+        void SetWriter(IFramePacketWriter writer);
+
+        void SetStreamId(uint streamId);
+    }
 }

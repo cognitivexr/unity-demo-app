@@ -1,21 +1,26 @@
 ﻿using System.Collections.Generic;
 
-[System.Serializable]
-public class Attributes : Dictionary<string, List<string>> 
+namespace CognitiveXR.CogStream
 {
-    public Attributes(){}
-
-    public Attributes Set(string key, string value)
+    [System.Serializable]
+    public class Attributes : Dictionary<string, List<string>>
     {
-        List<string> values = new List<string>(){value};
-        Add(key, values);
-        return this;
-    }
-}
+        public Attributes()
+        {
+        }
 
-[System.Serializable]
-public struct StreamSpec
-{
-    public string engineAddress;
-    public Attributes attributes;
+        public Attributes Set(string key, string value)
+        {
+            List<string> values = new List<string>() {value};
+            Add(key, values);
+            return this;
+        }
+    }
+
+    [System.Serializable]
+    public struct StreamSpec
+    {
+        public string engineAddress;
+        public Attributes attributes;
+    }
 }

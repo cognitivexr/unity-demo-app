@@ -1,19 +1,21 @@
 ﻿
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
-public class DebugReceiveChannel : ResultReceiveChannel
+namespace CognitiveXR.CogStream
 {
-    protected override EngineResult Receive(ResultPacket resultPacket)
+    public class DebugReceiveChannel : ResultReceiveChannel
     {
-        EngineResult engineResult = new EngineResult()
+        protected override List<EngineResult> ParseResultPacket(ResultPacket resultPacket)
         {
-            frameId = resultPacket.frameId,
-            seconds = resultPacket.seconds,
-            nanoseconds = resultPacket.nanoseconds,
-            result = System.Text.Encoding.UTF8.GetString(resultPacket.data),
-        };
+            EngineResult engineResult = new EngineResult()
+            {
+                frameId = resultPacket.frameId,
+                seconds = resultPacket.seconds,
+                nanoseconds = resultPacket.nanoseconds,
+                result = System.Text.Encoding.UTF8.GetString(resultPacket.data),
+            };
 
-        return engineResult;
+            return new List<EngineResult>{ engineResult };
+        }
     }
-
 }

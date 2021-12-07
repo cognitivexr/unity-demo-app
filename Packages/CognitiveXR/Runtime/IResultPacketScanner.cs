@@ -1,12 +1,9 @@
-﻿
+﻿using System.Threading.Tasks;
 
-using System.Threading.Tasks;
-
-public delegate void OnReceivedPacket(ResultPacket resultPacket);
-
-public interface IResultPacketScanner
+namespace CognitiveXR.CogStream
 {
-   Task<ResultPacket> Next();
-   
-   OnReceivedPacket onReceivedPacket { get; set; }
+   public interface IResultPacketScanner
+   {
+      Task<ResultPacket> Next();
+   }
 }

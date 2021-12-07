@@ -1,43 +1,36 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-
-public abstract class ResultReceiveChannel
+namespace CognitiveXR.CogStream
 {
-    protected IResultPacketScanner resultPacketScanner;
-    protected readonly ConcurrentQueue<EngineResult> engineResultQueue = new ConcurrentQueue<EngineResult>();
-
-    protected abstract EngineResult Receive(ResultPacket resultPacket);
-
-    public void SetResultPacketScanner(IResultPacketScanner resultPacketScanner)
+    public abstract class ResultReceiveChannel
     {
-        this.resultPacketScanner = resultPacketScanner;
-    }
-    
-    public bool TryDequeue<T>(out T engineResult) where T : EngineResult
-    {
-        bool success = engineResultQueue.TryDequeue(out EngineResult result);
-        if (success)
-        {
-            engineResult = (T) result;
-        }
-        else
-        {
-            engineResult = null;
-        }
-        return success;
-    }
+        private IResultPacketScanner resultPacketScanner;
 
-    public async Task<T> Next<T>() where T : EngineResult
-    {
-        if (resultPacketScanner != null)
+        protected abstract List<EngineResult> ParseResultPacket(ResultPacket resultPacket);
+
+        public void SetResultPacketScanner(IResultPacketScanner inResultPacketScanner)
         {
-            ResultPacket resultPacket = await resultPacketScanner.Next();
-            EngineResult engineResult = Receive(resultPacket);
-            return (T) engineResult;
+            this.resultPacketScanner = inResultPacketScanner;
         }
-        
-        // TODO: error handling
-        return null;
+
+        public async Task<List<T>> Next<T>() where T : EngineResult
+        {
+            if (resultPacketScanner != null)
+            {
+                ResultPacket resultPacket = await resultPacketScanner.Next();
+                List<EngineResult> engineResults = ParseResultPacket(resultPacket);
+
+                List<T> results = new List<T>();
+                foreach (EngineResult engineResult in engineResults)
+                {
+                    results.Add((T) engineResult);
+                }
+
+                return results;
+            }
+
+            return new List<T>();
+        }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System;
-
-public struct ResultPacket
+﻿namespace CognitiveXR.CogStream
 {
-    public uint streamId;
-    public uint frameId;
-    public uint seconds;
-    public uint nanoseconds;
-    public byte[] data;
+    public struct ResultPacket
+    {
+        public uint streamId;
+        public uint frameId;
+        public uint seconds;
+        public uint nanoseconds;
+        public byte[] data;
+    }
 }
