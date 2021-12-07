@@ -195,6 +195,7 @@ public class HLImageSenderComponent : MonoBehaviour
                         new Vector2(engineResult.face[0] + engineResult.face[2],
                             engineResult.face[1] + engineResult.face[3]));
 
+                    await new WaitForUpdate(); // back to unity main thread HACK!!!!!
                     OnEmotionDetected(new EmotionBox.EmotionInfo()
                     {
                         Bounds = new List<Vector3>()
