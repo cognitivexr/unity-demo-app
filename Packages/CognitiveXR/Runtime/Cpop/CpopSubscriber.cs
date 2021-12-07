@@ -6,7 +6,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using UnityEngine;
 
-namespace cpop_client
+namespace CognitiveXR.Cpop
 {
     public class CpopServerOptions
     {
@@ -59,26 +59,18 @@ namespace cpop_client
         {
             try
             {
-                //Debug.LogError("CPOP HANDLER CALLED!");
-
                 var payload = e.ApplicationMessage.Payload;
-                //Debug.LogError("PAYLOAD INIT DONE");
-
+             
                 String jsonText = System.Text.Encoding.UTF8.GetString(payload);
-                //Debug.LogError("JSONTEXT CREATED");
-
+             
                 var cpopData = JsonUtility.FromJson<CpopData>(jsonText);
 
-                //Debug.LogError("ENQUEUE CPOPDATA...");
                 Queue.Enqueue(cpopData);
-
-                //Debug.LogError("CPOPDATA ENQUEUED!");
-
+                
             }
             catch (Exception exp)
             {
                 Debug.LogError(exp);
-
             }
         }
     }

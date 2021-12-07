@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace cpop_client
+namespace CognitiveXR.Cpop
 {
     [System.Serializable]
     public struct CpopData
