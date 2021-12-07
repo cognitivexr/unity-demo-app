@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using HoloLensCameraStream;
 using TMPro;
@@ -23,12 +25,12 @@ public class HLImageSenderComponent : MonoBehaviour
 {
     // engine
     private EngineClient engineClient;
-    private uint frameId = 0;
 
     private IntPtr spatialCoordinateSystemPtr;
     private HoloLensCameraStream.VideoCapture videoCapture;
     private byte[] latestImageBytes;
     private HoloLensCameraStream.Resolution resolution;
+    private CancellationTokenSource cancellationTokenSource;
     
     [Header("StreamSpec")] 
     public string address;
@@ -60,13 +62,14 @@ public class HLImageSenderComponent : MonoBehaviour
         CreateCamera();
     }
 
-    OnApplicationFocus(bool hasFocus)
+    private void OnApplicationFocus(bool hasFocus)
     {
         if(hasFocus == false)
         {
             if(videoCapture != null)
             {
                 videoCapture.StopRecordingAsync(OnStoppedRecordingVideo);
+                cancellationTokenSource.Cancel();
             }
         }
     }
@@ -74,7 +77,7 @@ public class HLImageSenderComponent : MonoBehaviour
     void OnStoppedRecordingVideo(VideoCapture.VideoCaptureResult result)
     {
         Debug.Log("Stopped Recording Video!");
-        m_VideoCapture.StopVideoModeAsync(OnStoppedVideoCaptureMode);
+        videoCapture.StopVideoModeAsync(OnStoppedVideoCaptureMode);
     }
     
     private void OnDestroy()
@@ -85,50 +88,7 @@ public class HLImageSenderComponent : MonoBehaviour
             videoCapture.Dispose();
         }
     }
-
-    private void Update()
-    {
-        ResultReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<ResultReceiveChannel>();
-        if (receiveChannel == null) return;
-
-        while (receiveChannel.TryDequeue<FaceEngineResult>(out FaceEngineResult engineResult))
-        {
-            if (engineResult.emotions.Count > 0)
-            {
-            try {
-                SampleStruct s = spatialInfo[engineResult.frameId];
-
-                Vector3 pos1 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-                    new Vector2(engineResult.face[0], engineResult.face[1]));
-                Vector3 pos2 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-                    new Vector2(engineResult.face[0], engineResult.face[1] + engineResult.face[3]));
-                Vector3 pos4 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-                    new Vector2(engineResult.face[0] + engineResult.face[2], engineResult.face[1]));
-                Vector3 pos3 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix, resolution,
-                    new Vector2(engineResult.face[0] + engineResult.face[2], engineResult.face[1] + engineResult.face[3]));
-
-                OnEmotionDetected(new EmotionBox.EmotionInfo()
-                {
-                    Bounds = new List<Vector3>()
-                    {
-                        pos1, pos2, pos3, pos4
-                    },
-                    DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
-                    frameId = engineResult.frameId,
-                    cameraPose = s.cameraPose
-                });
-                
-                textfield.text = engineResult.frameId.ToString();
-                }
-catch (Exception e)
-{
-    // Debug
-    textfield.text = e.Message;
-}
-            }
-        }
-    }
-
+    
     private void CreateCamera()
     {
         spatialCoordinateSystemPtr = UnityEngine.XR.WSA.WorldManager.GetNativeISpatialCoordinateSystemPtr();
@@ -176,7 +136,7 @@ catch (Exception e)
     {
         if (result.success == false)
         {
-            Debug.LogWarning("Could not start video mode.");
+            Debug.LogError("Could not start video mode.");
             return;
         }
 
@@ -201,21 +161,61 @@ catch (Exception e)
 
         engineClient = new EngineClient(streamSpec, sendChannel, faceReceiveChannel);
         engineClient.Open();
+
+        cancellationTokenSource = new CancellationTokenSource();
+        Task.Run(UpdateFaceEngineResults, cancellationTokenSource.Token);
+    }
+    
+    private async void UpdateFaceEngineResults()
+    {
+        FaceReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<FaceReceiveChannel>();
+        if (receiveChannel == null) return;
+
+        while (!cancellationTokenSource.IsCancellationRequested)
+        {
+            List<FaceEngineResult> faceEngineResults = await receiveChannel.Next<FaceEngineResult>();
+            foreach (FaceEngineResult engineResult in faceEngineResults)
+            {
+                if (engineResult.emotions.Count > 0)
+                {
+
+                    SampleStruct s = spatialInfo[engineResult.frameId];
+
+                    Vector3 pos1 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
+                        resolution,
+                        new Vector2(engineResult.face[0], engineResult.face[1]));
+                    Vector3 pos2 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
+                        resolution,
+                        new Vector2(engineResult.face[0], engineResult.face[1] + engineResult.face[3]));
+                    Vector3 pos4 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
+                        resolution,
+                        new Vector2(engineResult.face[0] + engineResult.face[2], engineResult.face[1]));
+                    Vector3 pos3 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
+                        resolution,
+                        new Vector2(engineResult.face[0] + engineResult.face[2],
+                            engineResult.face[1] + engineResult.face[3]));
+
+                    OnEmotionDetected(new EmotionBox.EmotionInfo()
+                    {
+                        Bounds = new List<Vector3>()
+                        {
+                            pos1, pos2, pos3, pos4
+                        },
+                        DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
+                        frameId = engineResult.frameId,
+                        cameraPose = s.cameraPose
+                    });
+                }
+            }
+        }
     }
     
     void OnFrameSampleAcquired(VideoCaptureSample sample)
     {
          if(latestImageBytes == null || latestImageBytes.Length < sample.dataLength)
             latestImageBytes = new byte[sample.dataLength];
-
-
-        frameId++;
-    
-// TODO: remove
-        if((frameId%15) != 0)
-            return;
-
-        sample.CopyRawImageDataIntoBuffer(latestImageBytes);
+         
+         sample.CopyRawImageDataIntoBuffer(latestImageBytes);
 
         // Get the cameraToWorldMatrix and projectionMatrix
         if(!sample.TryGetCameraToWorldMatrix(out float[] camera2WorldMatrixArray) || !sample.TryGetProjectionMatrix(out float[] projectionMatrixArray))
@@ -226,13 +226,29 @@ catch (Exception e)
         Matrix4x4 camera2WorldMatrix = LocatableCameraUtils.ConvertFloatArrayToMatrix4x4(camera2WorldMatrixArray);
         Matrix4x4 projectionMatrix = LocatableCameraUtils.ConvertFloatArrayToMatrix4x4(projectionMatrixArray);
 
-        SampleStruct s = new SampleStruct();
-        s.camera2WorldMatrix = camera2WorldMatrix;
-        s.projectionMatrix = projectionMatrix;
-        s.cameraPose = new Pose(Camera.main.transform.position, Camera.main.transform.rotation);
+        SampleStruct s = new SampleStruct
+        {
+            camera2WorldMatrix = camera2WorldMatrix,
+            projectionMatrix = projectionMatrix,
+            cameraPose = new Pose(Camera.main.transform.position, Camera.main.transform.rotation)
+        };
 
-        spatialInfo.Add(frameId, s);
+        Frame frame = new Frame
+        {
+            timestamp = DateTime.Now,
+            rawFrame = latestImageBytes,
+            height = resolution.height,
+            width = resolution.width,
+        };
 
+        JpgSendChannel jpgSendChannel = engineClient.GetSendChannel<JpgSendChannel>();
+        uint? frameId = jpgSendChannel?.Send(frame);
+
+        if (frameId.HasValue)
+        {
+            spatialInfo.Add(frameId.Value, s);
+        }
+        
         if (ShowDebugCameraImage)
         {
             UnityEngine.WSA.Application.InvokeOnAppThread(() =>
@@ -257,18 +273,6 @@ catch (Exception e)
                 _picture.transform.rotation = Quaternion.LookRotation(inverseNormal, camera2WorldMatrix.GetColumn(1));
             }, false);
         }
-
-        Frame frame = new Frame
-        {
-            timestamp = DateTime.Now,
-            rawFrame = latestImageBytes,
-            height = resolution.height,
-            width = resolution.width,
-            frameId = frameId
-        };
-
-        JpgSendChannel jpgSendChannel = engineClient.GetSendChannel<JpgSendChannel>();
-        jpgSendChannel?.Send(frame);
 
     }
 #else

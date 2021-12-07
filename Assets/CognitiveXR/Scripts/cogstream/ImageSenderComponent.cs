@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -13,11 +14,11 @@ using CognitiveXR.CogStream;
 public class ImageSenderComponent : MonoBehaviour
 {
     private EngineClient engineClient;
-    private uint frameId = 0;
-    
+
     private PhotoCapture photoCapture;
     private Resolution cameraResolution;
     private CameraParameters cameraParameters;
+    private CancellationTokenSource cancellationTokenSource;
     
     [Header("StreamSpec")]
     public string address;
@@ -25,8 +26,7 @@ public class ImageSenderComponent : MonoBehaviour
 
     private Texture2D Picture;
     [SerializeField] private TextMeshProUGUI textfield;
-    private DateTime time;
-    
+
     private void Start()
     {
         CreateCamera();
@@ -34,10 +34,7 @@ public class ImageSenderComponent : MonoBehaviour
     
     private void CreateCamera()
     {
-        cameraResolution =VideoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).First();
-
-        float cameraFramerate = VideoCapture.GetSupportedFrameRatesForResolution(cameraResolution)
-            .OrderByDescending((fps) => fps).First();
+        cameraResolution = VideoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).First();
 
         UnityEngine.Windows.WebCam.PhotoCapture.CreateAsync(false, delegate(UnityEngine.Windows.WebCam.PhotoCapture captureObject)
         {
@@ -53,8 +50,13 @@ public class ImageSenderComponent : MonoBehaviour
             // Activate the camera
             photoCapture.StartPhotoModeAsync(cameraParameters, delegate(UnityEngine.Windows.WebCam.PhotoCapture.PhotoCaptureResult result)
             {
-                Debug.Log("camera is ready");
+                if (!result.success)
+                {
+                    Debug.LogError("Failed to start camera");
+                    return;
+                }
                 
+                Debug.Log("camera is ready");
                 CreateEngineClient();
             });
         });
@@ -74,60 +76,47 @@ public class ImageSenderComponent : MonoBehaviour
 
         JpgSendChannel sendChannel = new JpgSendChannel(cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight);
         DebugReceiveChannel receiveChannel = new DebugReceiveChannel();
-
+        
         engineClient = new EngineClient(streamSpec, sendChannel, receiveChannel, 42);
         engineClient.Open();
 
+        cancellationTokenSource = new CancellationTokenSource();
         Task.Run(UpdateFaceEngineResults);
     }
 
     void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
     {
-        Task.Run(async () =>
+        List<byte> imageBufferList = new List<byte>();
+        photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList);
+        
+        //todo: invert image
+        int stride = 4;
+        float denominator = 1.0f / 255.0f;
+        List<Color> colorArray = new List<Color>();
+        for (int i = imageBufferList.Count - 1; i >= 0; i -= stride)
         {
-            List<byte> imageBufferList = new List<byte>();
-            photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList);
-            
-            //todo: invert image
-            int stride = 4;
-            float denominator = 1.0f / 255.0f;
-            List<Color> colorArray = new List<Color>();
-            for (int i = imageBufferList.Count - 1; i >= 0; i -= stride)
-            {
-                float a = (int)(imageBufferList[i - 0]) * denominator;
-                float r = (int)(imageBufferList[i - 1]) * denominator;
-                float g = (int)(imageBufferList[i - 2]) * denominator;
-                float b = (int)(imageBufferList[i - 3]) * denominator;
+            float a = (int)(imageBufferList[i - 0]) * denominator;
+            float r = (int)(imageBufferList[i - 1]) * denominator;
+            float g = (int)(imageBufferList[i - 2]) * denominator;
+            float b = (int)(imageBufferList[i - 3]) * denominator;
 
-                colorArray.Add(new Color(r, g, b, a));
-            }
-            /*
-            Picture = new Texture2D(cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, TextureFormat.RGBA32, false);
-            Picture.SetPixels(colorArray.ToArray());
-            Picture.Apply();
-            */
+            colorArray.Add(new Color(r, g, b, a));
+        }
+        
+        Picture = new Texture2D(cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight, TextureFormat.RGBA32, false);
+        Picture.SetPixels(colorArray.ToArray());
+        Picture.Apply();
+        
+        Frame frame = new Frame
+        {
+            timestamp = DateTime.Now,
+            rawFrame = imageBufferList.ToArray(),
+            height = cameraParameters.cameraResolutionHeight,
+            width = cameraParameters.cameraResolutionWidth,
+        };
 
-            Frame frame = new Frame
-            {
-                timestamp = DateTime.Now,
-                rawFrame = imageBufferList.ToArray(),
-                height = cameraParameters.cameraResolutionHeight,
-                width = cameraParameters.cameraResolutionWidth,
-                frameId = frameId++
-            };
-
-            JpgSendChannel jpgSendChannel = engineClient.GetSendChannel<JpgSendChannel>();
-            jpgSendChannel?.Send(frame);
-            time = DateTime.Now;
-            /*
-            for (int i = 0; i < 1000; i++)
-            {
-                await Task.Delay(66);
-                jpgSendChannel?.Send(frame);
-                time = DateTime.Now;
-            }
-            */
-        });
+        JpgSendChannel jpgSendChannel = engineClient.GetSendChannel<JpgSendChannel>();
+        uint? fameId = jpgSendChannel?.Send(frame);
     }
     
     private async void UpdateFaceEngineResults()
@@ -135,15 +124,16 @@ public class ImageSenderComponent : MonoBehaviour
         DebugReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<DebugReceiveChannel>();
         if (receiveChannel == null) return;
 
-        while (true)
+        while (!cancellationTokenSource.IsCancellationRequested)
         {
             List<EngineResult> faceEngineResults = await receiveChannel.Next<EngineResult>();
             foreach (EngineResult faceEngineResult in faceEngineResults)
             {
                 Debug.Log(faceEngineResult.result);
-                Debug.Log((DateTime.Now - time).Milliseconds);
             }
         }
+        
+        Debug.Log("UpdateFaceEngineResults finished");
     }
     
     private void OnGUI()
@@ -153,6 +143,11 @@ public class ImageSenderComponent : MonoBehaviour
         if (GUILayout.Button("Send image"))
         { 
             photoCapture?.TakePhotoAsync(OnCapturedPhotoToMemory);
+        }
+        
+        if (GUILayout.Button("Cancel"))
+        { 
+            cancellationTokenSource.Cancel();
         }
 
         if (Picture != null)

@@ -12,6 +12,7 @@ public class JpgSendChannel : IFrameSendChannel
     private int height;
     private GraphicsFormat graphicsFormat;
     private int quality;
+    private uint frameId = 0u; // auto incremented
     
     public JpgSendChannel(int width, int height, GraphicsFormat graphicsFormat = GraphicsFormat.B8G8R8A8_SRGB, int quality = 90)
     {
@@ -21,13 +22,15 @@ public class JpgSendChannel : IFrameSendChannel
         this.quality = quality;
     }
 
-    public void Send(Frame frame)
+    public uint? Send(Frame frame)
     {
         if (writer == null)
         {
             Debug.LogWarning("FramePacketWriter is not set. Discarding frame");
-            return;    
+            return null;    
         }
+
+        frame.frameId = frameId++;
         
         byte[] jpg = ImageConversion.EncodeArrayToJPG(frame.rawFrame, graphicsFormat, (uint)width, (uint)height, 0U, quality);
         
@@ -44,6 +47,8 @@ public class JpgSendChannel : IFrameSendChannel
         };
         
         writer.Write(framePacket);
+
+        return frameId;
     }
 
     public void SetWriter(IFramePacketWriter writer)
