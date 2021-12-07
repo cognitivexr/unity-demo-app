@@ -1,4 +1,4 @@
-﻿using cpop_client;
+﻿using CognitiveXR.Cpop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
