@@ -4,8 +4,7 @@ using UnityEngine;
 public class Test : MonoBehaviour
 {
     private MediatorClient mediatorClient;
-    // Start is called before the first frame update
-    
+
     async void Start()
     {
         Message message = new Message
@@ -17,11 +16,11 @@ public class Test : MonoBehaviour
             }
         };
         
-        Debug.Log(message.ToJson());
 
-        mediatorClient = new MediatorClient("ws://192.168.1.104:8080");
+        mediatorClient = new MediatorClient("ws://192.168.1.104:8191");
         await mediatorClient.Open();
         await mediatorClient.SendMessage(message);
+        //mediatorClient.Receive();
     }
 
     private void OnDestroy()

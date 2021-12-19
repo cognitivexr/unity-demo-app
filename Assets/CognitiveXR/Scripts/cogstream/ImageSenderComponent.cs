@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CognitiveXR.CogStream;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Windows.WebCam;
-using CognitiveXR.CogStream;
 
 /// <summary>
 /// For debug purpose
