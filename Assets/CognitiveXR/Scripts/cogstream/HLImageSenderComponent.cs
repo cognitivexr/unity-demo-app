@@ -8,6 +8,7 @@ using UnityEngine;
 using HoloLensCameraStream;
 using TMPro;
 using CognitiveXR.CogStream;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Unity.XRTools.Rendering;
 using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering;
@@ -16,8 +17,6 @@ using UnityEngine.XR.WSA;
 using CapturePixelFormat = HoloLensCameraStream.CapturePixelFormat;
 #if WINDOWS_UWP
 using global::Windows.Perception.Spatial;
-using UnityEngine.Windows.WebCam;
-
 #endif // WINDOWS_UWP
 
 
@@ -55,31 +54,13 @@ public class HLImageSenderComponent : MonoBehaviour
         
     public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
     public OnEmotionDetectedDelegate OnEmotionDetected;
-
+    
 #if WINDOWS_UWP
     private void Start()
     {
         CreateCamera();
     }
 
-    private void OnApplicationFocus(bool hasFocus)
-    {
-        if(hasFocus == false)
-        {
-            if(videoCapture != null)
-            {
-                videoCapture.StopRecordingAsync(OnStoppedRecordingVideo);
-                cancellationTokenSource.Cancel();
-            }
-        }
-    }
-
-    void OnStoppedRecordingVideo(VideoCapture.VideoCaptureResult result)
-    {
-        Debug.Log("Stopped Recording Video!");
-        videoCapture.StopVideoModeAsync(OnStoppedVideoCaptureMode);
-    }
-    
     private void OnDestroy()
     {
         if (videoCapture != null)
