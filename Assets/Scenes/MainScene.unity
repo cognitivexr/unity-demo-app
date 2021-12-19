@@ -743,6 +743,21 @@ MonoBehaviour:
   EmotionBoxPrefab: {fileID: 3856199848746573567, guid: 2792e0bbeda38d242b83fc31c8e1a37e,
     type: 3}
   emotionDetectionComponent: {fileID: 1180585103}
+--- !u!114 &1180585101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180585099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eead87548cd29e442b2a7d82584b3bdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  address: 192.168.1.104
+  port: 54321
+  textfield: {fileID: 780218894}
 --- !u!114 &1180585103 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4558435951159166914, guid: a828ec9bb267542459d8c35d5e79bcf3,

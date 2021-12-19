@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "at.cognitivexr.cogstream": {
+    "at.cognitivexr": {
       "version": "file:CognitiveXR",
       "depth": 0,
       "source": "embedded",

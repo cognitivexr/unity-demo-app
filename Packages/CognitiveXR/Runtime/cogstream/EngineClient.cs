@@ -41,7 +41,7 @@ namespace CognitiveXR.CogStream
                 {
                     await client.ConnectAsync(endPoint.Address, endPoint.Port);
 
-                    string json = streamSpecToJson(streamSpec);
+                    string json = streamSpec.ToJson(); 
 
                     byte[] jsonAsBytes = Encoding.UTF8.GetBytes(json);
                     byte[] lengthInByte = BitConverter.GetBytes(jsonAsBytes.Length);
