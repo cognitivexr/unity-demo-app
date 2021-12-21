@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CognitiveXR.CogStream;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Windows.WebCam;
@@ -75,13 +76,13 @@ public class ImageSenderComponent : MonoBehaviour
         };
 
         JpgSendChannel sendChannel = new JpgSendChannel(cameraParameters.cameraResolutionWidth, cameraParameters.cameraResolutionHeight);
-        DebugReceiveChannel receiveChannel = new DebugReceiveChannel();
+        FaceReceiveChannel receiveChannel = new FaceReceiveChannel();
         
         engineClient = new EngineClient(streamSpec, sendChannel, receiveChannel, 42);
         engineClient.Open();
 
         cancellationTokenSource = new CancellationTokenSource();
-        Task.Run(UpdateFaceEngineResults);
+        Task.Run(UpdateFaceEngineResults, cancellationTokenSource.Token);
     }
 
     void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
@@ -121,15 +122,20 @@ public class ImageSenderComponent : MonoBehaviour
     
     private async void UpdateFaceEngineResults()
     {
-        DebugReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<DebugReceiveChannel>();
+        FaceReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<FaceReceiveChannel>();
         if (receiveChannel == null) return;
 
         while (!cancellationTokenSource.IsCancellationRequested)
         {
-            List<EngineResult> faceEngineResults = await receiveChannel.Next<EngineResult>();
-            foreach (EngineResult faceEngineResult in faceEngineResults)
+            List<FaceEngineResult> faceEngineResults = await receiveChannel.Next<FaceEngineResult>();
+            foreach (FaceEngineResult engineResult in faceEngineResults)
             {
-                Debug.Log(faceEngineResult.result);
+                if (engineResult.emotions.Count > 0)
+                {
+                    await new WaitForUpdate(); // back to unity main thread HACK!!!!!
+                    var DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label;
+                    Debug.Log(DominantEmotion);
+                }
             }
         }
         
