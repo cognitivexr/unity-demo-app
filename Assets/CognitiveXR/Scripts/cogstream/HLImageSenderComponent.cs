@@ -51,7 +51,7 @@ public class HLImageSenderComponent : MonoBehaviour
         public Pose cameraPose;
     }
 
-    private Dictionary<uint, SampleStruct> spatialInfo = new Dictionary<uint, SampleStruct>();
+    private SampleStruct spatialInfo;
         
     public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
     public OnEmotionDetectedDelegate OnEmotionDetected;
@@ -170,7 +170,7 @@ public class HLImageSenderComponent : MonoBehaviour
                 if (engineResult.emotions.Count > 0)
                 {
 
-                    SampleStruct s = spatialInfo[engineResult.frameId];
+                    SampleStruct s = spatialInfo;
 
                     Vector3 pos1 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
                         resolution,
@@ -249,7 +249,7 @@ public class HLImageSenderComponent : MonoBehaviour
             {
                 receivedNewFrame = false;
             }
-            spatialInfo.Add(frameId.Value, s);
+            spatialInfo = s;
         }
         
         if (ShowDebugCameraImage)
