@@ -27,6 +27,9 @@ public class ImageSenderComponent : MonoBehaviour
 
     private Texture2D Picture;
     [SerializeField] private TextMeshProUGUI textfield;
+    
+    public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
+    public OnEmotionDetectedDelegate OnEmotionDetected;
 
     private void Start()
     {
@@ -133,7 +136,13 @@ public class ImageSenderComponent : MonoBehaviour
                 if (engineResult.emotions.Count > 0)
                 {
                     var DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label;
-                    Debug.Log(DominantEmotion);
+                    OnEmotionDetected(new EmotionBox.EmotionInfo()
+                    {
+                        Bounds = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero,Vector3.zero},
+                        DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
+                        frameId = engineResult.frameId,
+                        cameraPose = new Pose()
+                    });
                 }
             }
         }

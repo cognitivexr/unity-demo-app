@@ -10,6 +10,7 @@ public class EmotionManager : MonoBehaviour
 {
     [SerializeField] private GameObject EmotionBoxPrefab;
     [SerializeField] private HLImageSenderComponent emotionDetectionComponent;
+    [SerializeField] private ImageSenderComponent imageSenderComponent;
     [SerializeField] private TextMeshProUGUI textfield;
     private readonly List<EmotionBox> spawnedBoxes = new List<EmotionBox>();
 
@@ -18,7 +19,15 @@ public class EmotionManager : MonoBehaviour
     private void Awake()
     {
         Debug.Assert(EmotionBoxPrefab != null);
-        emotionDetectionComponent.OnEmotionDetected += OnEmotionDetected;
+        if (emotionDetectionComponent != null)
+        {
+            emotionDetectionComponent.OnEmotionDetected += OnEmotionDetected;
+        }
+
+        if (imageSenderComponent != null)
+        {
+            imageSenderComponent.OnEmotionDetected += OnEmotionDetected;
+        }
     }
 
     private void Update()
