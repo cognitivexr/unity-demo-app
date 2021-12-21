@@ -179,8 +179,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4558435951159166914, guid: a828ec9bb267542459d8c35d5e79bcf3,
         type: 3}
+      propertyPath: port
+      value: 54321
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558435951159166914, guid: a828ec9bb267542459d8c35d5e79bcf3,
+        type: 3}
       propertyPath: address
-      value: 192.168.1.51
+      value: 192.168.0.10
       objectReference: {fileID: 0}
     - target: {fileID: 4558435951159166914, guid: a828ec9bb267542459d8c35d5e79bcf3,
         type: 3}
@@ -195,7 +200,7 @@ PrefabInstance:
     - target: {fileID: 4558435951159166914, guid: a828ec9bb267542459d8c35d5e79bcf3,
         type: 3}
       propertyPath: ShowDebugCameraImage
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4558435951159166915, guid: a828ec9bb267542459d8c35d5e79bcf3,
         type: 3}
@@ -462,7 +467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &780218893
 RectTransform:
   m_ObjectHideFlags: 0
@@ -528,8 +533,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.04
-  m_fontSizeBase: 0.04
+  m_fontSize: 0.03
+  m_fontSizeBase: 0.03
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -743,6 +748,7 @@ MonoBehaviour:
   EmotionBoxPrefab: {fileID: 3856199848746573567, guid: 2792e0bbeda38d242b83fc31c8e1a37e,
     type: 3}
   emotionDetectionComponent: {fileID: 1180585103}
+  textfield: {fileID: 780218894}
 --- !u!114 &1180585103 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4558435951159166914, guid: a828ec9bb267542459d8c35d5e79bcf3,

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,7 +10,7 @@ public class EmotionManager : MonoBehaviour
 {
     [SerializeField] private GameObject EmotionBoxPrefab;
     [SerializeField] private HLImageSenderComponent emotionDetectionComponent;
-
+    [SerializeField] private TextMeshProUGUI textfield;
     private readonly List<EmotionBox> spawnedBoxes = new List<EmotionBox>();
 
     private ConcurrentQueue<EmotionBox.EmotionInfo> receivedEmotionDetectedEvents = new ConcurrentQueue<EmotionBox.EmotionInfo>();
@@ -33,6 +34,11 @@ public class EmotionManager : MonoBehaviour
             emotionBox.Init(info);
         
             spawnedBoxes.Add(emotionBox);
+
+            if (textfield)
+            {
+                textfield.text = $"frame: {info.frameId} : {info.DominantEmotion}";
+            }
         }
     }
 

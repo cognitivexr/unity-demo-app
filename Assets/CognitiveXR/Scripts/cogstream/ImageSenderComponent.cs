@@ -132,7 +132,6 @@ public class ImageSenderComponent : MonoBehaviour
             {
                 if (engineResult.emotions.Count > 0)
                 {
-                    await new WaitForUpdate(); // back to unity main thread HACK!!!!!
                     var DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label;
                     Debug.Log(DominantEmotion);
                 }
