@@ -58,14 +58,7 @@ public class HLImageSenderComponent : MonoBehaviour
     
     private Object _locker = new Object();
     private bool receivedNewFrame = true;
-
-    void foo()
-    {
-        lock (_locker)
-        {
-            receivedNewFrame = true;
-        }
-    }
+    
     
 #if WINDOWS_UWP
     private void Start()
