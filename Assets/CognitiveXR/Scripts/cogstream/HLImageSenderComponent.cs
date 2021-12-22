@@ -15,7 +15,6 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Networking;
 using UnityEngine.XR.WSA;
 using CapturePixelFormat = HoloLensCameraStream.CapturePixelFormat;
-using Object = System.Object;
 #if WINDOWS_UWP
 using global::Windows.Perception.Spatial;
 #endif // WINDOWS_UWP
@@ -56,10 +55,9 @@ public class HLImageSenderComponent : MonoBehaviour
     public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
     public OnEmotionDetectedDelegate OnEmotionDetected;
     
-    private Object _locker = new Object();
+
     private bool receivedNewFrame = true;
-    
-    
+
 #if WINDOWS_UWP
     private void Start()
     {
@@ -161,10 +159,11 @@ public class HLImageSenderComponent : MonoBehaviour
         {
             List<FaceEngineResult> faceEngineResults = await receiveChannel.Next<FaceEngineResult>();
 
-             lock (_locker)
+            lock (this)
             {
                 receivedNewFrame = true;
             }
+
             foreach (FaceEngineResult engineResult in faceEngineResults)
             {
                 if (engineResult.emotions.Count > 0)
@@ -203,7 +202,7 @@ public class HLImageSenderComponent : MonoBehaviour
     
     void OnFrameSampleAcquired(VideoCaptureSample sample)
     {
-         lock (_locker)
+         lock (this)
         {
             if(receivedNewFrame == false)
             {
@@ -245,7 +244,7 @@ public class HLImageSenderComponent : MonoBehaviour
 
         if (frameId.HasValue)
         {
-            lock (_locker)
+            lock (this)
             {
                 receivedNewFrame = false;
             }

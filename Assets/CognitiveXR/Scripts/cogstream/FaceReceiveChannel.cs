@@ -7,7 +7,7 @@ public class FaceReceiveChannel : ResultReceiveChannel
     protected override List<EngineResult> ParseResultPacket(ResultPacket resultPacket)
     {
         string jsonText = System.Text.Encoding.UTF8.GetString(resultPacket.data);
-        if(string.IsNullOrEmpty(jsonText) || jsonText.Length <= 2) return null; // TODO: error handling
+        if(string.IsNullOrEmpty(jsonText) || jsonText.Length <= 2) return new List<EngineResult>(); // TODO: error handling
 
         JSONNode json = JSON.Parse(jsonText);
         int facesNumber = json.AsArray.Count;
