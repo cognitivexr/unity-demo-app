@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using CognitiveXR.CogStream;
 using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using TMPro;
 using UnityEngine;
 
 public class EngineSelectionMenu : MonoBehaviour
 {
     [SerializeField] private List<PressableButtonHoloLens2> EngineSelectButtons;
+    [SerializeField] private GridObjectCollection buttonGridCollection;
     public delegate void EngineSelected(int engineIdx);
     public static EngineSelected OnEngineSelected;
     
@@ -22,6 +24,8 @@ public class EngineSelectionMenu : MonoBehaviour
                 textMeshProGo.GetComponent<TMP_Text>().text = engines[i].name;
             }
         }
+        
+        buttonGridCollection.UpdateCollection();
     }
 
     public void LaunchEngine(int engineIdx)

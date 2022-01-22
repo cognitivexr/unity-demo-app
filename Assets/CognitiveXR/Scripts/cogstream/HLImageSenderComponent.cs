@@ -31,17 +31,10 @@ public class HLImageSenderComponent : MonoBehaviour
     private byte[] latestImageBytes;
     private HoloLensCameraStream.Resolution resolution;
     private CancellationTokenSource cancellationTokenSource;
-
-    [Header("StreamSpec")] 
-    public bool debugConnect = false;
-    public string address;
-    public int port;
     private string engineAddress;
-
-    private StreamSpec streamSpec;
     
     [Header("Debug")]
-    [SerializeField] private TextMeshProUGUI textfield;
+    public bool debugConnect = false;
 
     [SerializeField] private bool ShowDebugCameraImage = true;
     
@@ -144,7 +137,7 @@ public class HLImageSenderComponent : MonoBehaviour
 
     private void CreateEngineClient()
     {
-        streamSpec = new StreamSpec
+        StreamSpec streamSpec = new StreamSpec
         {
             engineAddress = engineAddress,
             attributes = new Attributes()
