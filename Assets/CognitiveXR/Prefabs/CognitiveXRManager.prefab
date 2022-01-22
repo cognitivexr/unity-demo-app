@@ -43,4 +43,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de1cebaacd761c645a833a02cd6cdad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CpopServerAddress: localhost
+  CpopServerAddress: 192.168.0.41

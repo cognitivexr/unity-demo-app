@@ -31,6 +31,9 @@ public class ImageSenderComponent : MonoBehaviour
     public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
     public OnEmotionDetectedDelegate OnEmotionDetected;
 
+    //private Object _locker = new Object();
+    private bool receivedNewFrame = true;
+    
     private void Start()
     {
         CreateCamera();
@@ -90,6 +93,16 @@ public class ImageSenderComponent : MonoBehaviour
 
     void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
     {
+        
+        lock (this)
+        {
+            if(receivedNewFrame == false)
+            {
+                return;
+            }
+        }
+        
+        
         List<byte> imageBufferList = new List<byte>();
         photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList);
         
@@ -120,7 +133,16 @@ public class ImageSenderComponent : MonoBehaviour
         };
 
         JpgSendChannel jpgSendChannel = engineClient.GetSendChannel<JpgSendChannel>();
-        uint? fameId = jpgSendChannel?.Send(frame);
+        uint? frameId = jpgSendChannel?.Send(frame);
+        
+        if (frameId.HasValue)
+        {
+            lock (this)
+            {
+                receivedNewFrame = false;
+            }
+        }
+
     }
     
     private async void UpdateFaceEngineResults()
@@ -131,6 +153,12 @@ public class ImageSenderComponent : MonoBehaviour
         while (!cancellationTokenSource.IsCancellationRequested)
         {
             List<FaceEngineResult> faceEngineResults = await receiveChannel.Next<FaceEngineResult>();
+
+            lock (this)
+            {
+                receivedNewFrame = true;
+            }
+
             foreach (FaceEngineResult engineResult in faceEngineResults)
             {
                 if (engineResult.emotions.Count > 0)

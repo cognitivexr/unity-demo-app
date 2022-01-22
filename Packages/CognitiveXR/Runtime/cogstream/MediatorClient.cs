@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
@@ -11,24 +12,27 @@ namespace CognitiveXR.CogStream
     public class MediatorClient
     {
         private ClientWebSocket webSocket;
-        private readonly string uriString;
+        private readonly Uri uri;
 
         public MediatorClient(string url)
         {
-            uriString = url;
+            uri = new Uri(url);
         }
+
+        public bool IsOpen() => webSocket != null && webSocket.State == WebSocketState.Open;
 
         public async Task Open()
         {
-            Uri uri = new Uri(uriString);
             await ConnectToServer(uri);
         }
 
-        public async void Close()
+        public async Task Close()
         {
+            if (webSocket.State != WebSocketState.Open) return;
+            
             await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, String.Empty, CancellationToken.None);
         }
-
+        
         private async Task ConnectToServer(Uri uri)
         {
             try
@@ -44,24 +48,38 @@ namespace CognitiveXR.CogStream
             }
         }
 
+        public async Task<List<Engine>> GetEngines()
+        {
+            await SendMessage(MediatorClientMessage.GetServicesMessage());
+            Message service = await Receive();
+            return service.content.engines;
+        }
 
-        public Task SendMessage(Message message)
+        public async Task<string> StartEngine(Engine engine)
+        {
+            Message selectedEngine = MediatorClientMessage.GetSelectEngineMessage(engine);
+            await SendMessage(selectedEngine);
+            Message engineAddressMessage = await Receive();
+            return engineAddressMessage.content.engineAddress;
+        }
+
+        private Task SendMessage(Message message)
         {
             return SendMessage(message.ToJson());
         }
 
-        public async Task SendMessage(string message)
+        private async Task SendMessage(string message)
         {
             byte[] encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
             await webSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
-        public async Task Receive()
+        private async Task<Message> Receive()
         {
             ArraySegment<Byte> buffer = new ArraySegment<byte>(new byte[1024]);
 
-            while (webSocket.State == WebSocketState.Open)
+            if (webSocket.State == WebSocketState.Open)
             {
                 WebSocketReceiveResult result = null;
                 using (var memoryStream = new MemoryStream())
@@ -78,8 +96,9 @@ namespace CognitiveXR.CogStream
                     {
                         using (var reader = new StreamReader(memoryStream, Encoding.UTF8))
                         {
-                            string text = reader.ReadToEnd();
+                            string answer = reader.ReadToEnd();
 
+                            return MediatorClientMessage.Parse(answer);
                         }
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
@@ -88,8 +107,10 @@ namespace CognitiveXR.CogStream
                             CancellationToken.None);
                     }
                 }
-
             }
+
+            throw new Exception("No connection to the server");
         }
+        
     }
 }

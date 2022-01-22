@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SimpleJSON;
+using CognitiveXR.SimpleJSON;
 using CognitiveXR.CogStream;
 
 public class FaceReceiveChannel : ResultReceiveChannel

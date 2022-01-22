@@ -355,8 +355,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1054975976}
-  - component: {fileID: 1054975977}
-  - component: {fileID: 1054975978}
+  - component: {fileID: 1054975975}
   m_Layer: 0
   m_Name: Test
   m_TagString: Untagged
@@ -364,6 +363,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1054975975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054975974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600afe3aeef00a498140221b162e54c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1054975976
 Transform:
   m_ObjectHideFlags: 0
@@ -378,38 +389,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1054975977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1054975974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eead87548cd29e442b2a7d82584b3bdc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: 192.168.1.104
-  port: 54321
-  textfield: {fileID: 0}
---- !u!114 &1054975978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1054975974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0cd0e6d65e2acb47afede1f0fa47012, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EmotionBoxPrefab: {fileID: 3856199848746573567, guid: 2792e0bbeda38d242b83fc31c8e1a37e,
-    type: 3}
-  emotionDetectionComponent: {fileID: 0}
-  imageSenderComponent: {fileID: 1054975977}
-  textfield: {fileID: 266775226}
 --- !u!1 &1757230800
 GameObject:
   m_ObjectHideFlags: 0

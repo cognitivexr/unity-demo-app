@@ -38,7 +38,7 @@
 
 #endregion License and information
 
-namespace SimpleJSON
+namespace CognitiveXR.SimpleJSON
 {
     using System.Globalization;
     using System.Collections.Generic;
