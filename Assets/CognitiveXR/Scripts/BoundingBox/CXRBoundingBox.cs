@@ -1,4 +1,4 @@
-﻿using cpop_client;
+﻿using CognitiveXR.Cpop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,9 +58,6 @@ public class CXRBoundingBox : MonoBehaviour
 {
     private Vector3 pos;
     private Vector3 bbSize;
-    //private float height;
-    //private float width;
-    //private float depth;
     private float time;
 
     private Interpolator interpolator;
@@ -75,19 +72,11 @@ public class CXRBoundingBox : MonoBehaviour
     public void SetDimensions(Vector3 _dim)
     {
         bbSize = _dim;
-        //height = _dim.x;
-        //width = _dim.y;
-        //depth = _dim.z;
     }
     
     // Update is called once per frame
     void Update()
     {
-        //if(interpolator is null) return;
-
-        //Transform cachedTransform = transform;
-        //cachedTransform.position = interpolator.Get(Time.time) ?? (cachedTransform = transform).position;
-
         this.gameObject.transform.position = pos;
         
         BoxCollider boxCollider = GetComponent<BoxCollider>();
@@ -146,11 +135,5 @@ public class CXRBoundingBox : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.PublishBBUPdate -= ExtractCpopData;
-    }
-
-
-    private void Start()
-    {
-        //Debug.LogError("::::::::::::::::::::::::::::::::START::::::::::::::::::::::::::::::::::::::::::");
     }
 }

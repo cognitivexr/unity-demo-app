@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using cpop_client;
+using CognitiveXR.Cpop;
 
 public class TestBB : MonoBehaviour
 {

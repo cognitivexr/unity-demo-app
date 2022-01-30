@@ -1,0 +1,17 @@
+{
+  "name": "at.cognitivexr",
+  "displayName": "CognitiveXR",
+  "version": "0.0.1-preview",
+  "unity": "2019.3",
+  "description": "Cognitive XR client",
+  "keywords": [
+    "cogstream",
+    "cpop"
+  ],
+  "license": "MIT",
+  "homepage": "https://cognitivexr.at",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cognitivexr/cognitivexr-unity-client.git"
+  }
+}
