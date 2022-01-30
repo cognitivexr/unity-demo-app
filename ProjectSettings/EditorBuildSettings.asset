@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CogStreamExample.unity
     guid: 63aa87be57596534984e11ca873eae56
+  - enabled: 1
+    path: Assets/Scenes/CPOPExample.unity
+    guid: 0df2b33941a099a4dbe9aa2f7e07569c
   m_configObjects: {}

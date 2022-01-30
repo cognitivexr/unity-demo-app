@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace CognitiveXR.CogStream
 {
+    /// <summary>
+    /// The MediatorClient establishes a connection to the mediator and handles communication with it
+    /// </summary>
     public class MediatorClient
     {
         private ClientWebSocket webSocket;
@@ -21,11 +24,17 @@ namespace CognitiveXR.CogStream
 
         public bool IsOpen() => webSocket != null && webSocket.State == WebSocketState.Open;
 
+        /// <summary>
+        /// Connect to the Mediator
+        /// </summary>
         public async Task Open()
         {
             await ConnectToServer(uri);
         }
 
+        /// <summary>
+        /// Close a connection if it is open
+        /// </summary>
         public async Task Close()
         {
             if (webSocket.State != WebSocketState.Open) return;
@@ -33,6 +42,10 @@ namespace CognitiveXR.CogStream
             await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, String.Empty, CancellationToken.None);
         }
         
+        /// <summary>
+        /// Connects to the server proper
+        /// </summary>
+        /// <param name="uri"></param>
         private async Task ConnectToServer(Uri uri)
         {
             try
@@ -48,6 +61,10 @@ namespace CognitiveXR.CogStream
             }
         }
 
+        /// <summary>
+        /// Returns a list of available engines
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<Engine>> GetEngines()
         {
             await SendMessage(MediatorClientMessage.GetServicesMessage());
@@ -55,6 +72,11 @@ namespace CognitiveXR.CogStream
             return service.content.engines;
         }
 
+        /// <summary>
+        /// sends the launch command for an engine and returns its address
+        /// </summary>
+        /// <param name="engine">address of the engine</param>
+        /// <returns></returns>
         public async Task<string> StartEngine(Engine engine)
         {
             Message selectedEngine = MediatorClientMessage.GetSelectEngineMessage(engine);

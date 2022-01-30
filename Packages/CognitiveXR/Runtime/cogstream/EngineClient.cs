@@ -6,6 +6,9 @@ using System.Text;
 
 namespace CognitiveXR.CogStream
 {
+    /// <summary>
+    /// Engine Client manages the connection to the engine and holds sender and receiver components
+    /// </summary>
     public class EngineClient
     {
         private readonly StreamSpec streamSpec;
@@ -17,6 +20,13 @@ namespace CognitiveXR.CogStream
 
         private TcpClient client;
 
+        /// <summary>
+        /// Create a Engine Client instance 
+        /// </summary>
+        /// <param name="streamSpec"></param>
+        /// <param name="sendChannel"></param>
+        /// <param name="resultReceiveChannel"></param>
+        /// <param name="streamId"></param>
         public EngineClient(StreamSpec streamSpec, IFrameSendChannel sendChannel,
             ResultReceiveChannel resultReceiveChannel, uint streamId = 0)
         {
@@ -27,9 +37,11 @@ namespace CognitiveXR.CogStream
             this.sendChannel.SetStreamId(this.streamId);
         }
 
+        /// <summary>
+        /// Open a connection to the engine
+        /// </summary>
         public async void Open()
         {
-            // TODO: implement exception handling
             string[] parts = streamSpec.engineAddress.Split(':');
 
             IPAddress ipAddress = IPAddress.Parse(parts[0]);
@@ -68,11 +80,20 @@ namespace CognitiveXR.CogStream
 
         }
 
+        /// <summary>
+        /// Returns whether the client is connected or not
+        /// </summary>
+        /// <returns></returns>
         public bool isConnected()
         {
             return (client != null) && (client.Connected);
         }
 
+        /// <summary>
+        /// Converts StreamSpec to json
+        /// </summary>
+        /// <param name="streamSpec"></param>
+        /// <returns></returns>
         private string streamSpecToJson(StreamSpec streamSpec)
         {
             string attributes = streamSpec.attributes.Aggregate(
