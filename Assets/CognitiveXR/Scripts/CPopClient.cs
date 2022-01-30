@@ -1,7 +1,7 @@
 ﻿using CognitiveXR.Cpop;
 using UnityEngine;
 
-public class CpopClient : MonoBehaviour
+public class CPOPClient : MonoBehaviour
 {
     private CpopSubscriber cpopSubscriber;
 
