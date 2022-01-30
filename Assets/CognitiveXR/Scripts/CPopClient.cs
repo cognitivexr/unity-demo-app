@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using CognitiveXR.Cpop;
+﻿using CognitiveXR.Cpop;
 using UnityEngine;
 
-public class CognitiveXRManager : MonoBehaviour
+public class CpopClient : MonoBehaviour
 {
     private CpopSubscriber cpopSubscriber;
 
@@ -18,10 +15,7 @@ public class CognitiveXRManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if ((cpopSubscriber is null))
-        {
-            cpopSubscriber.Unsubscribe();
-        }
+        cpopSubscriber?.Unsubscribe();
     }
 
     private void Update()

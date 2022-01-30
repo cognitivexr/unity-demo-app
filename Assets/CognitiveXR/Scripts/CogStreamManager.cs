@@ -6,9 +6,11 @@ using UnityEngine;
 public class CogStreamManager : MonoBehaviour
 {
     private MediatorClient mediatorClient;
-    public HLImageSenderComponent ImageSenderComponent;
-    public EngineSelectionMenu EngineSelectionMenu;
     private List<Engine> engines;
+    
+    public EngineSelectionMenu EngineSelectionMenu;
+    public GameObject emotionEnginePrefab;
+    public GameObject yoloEnginePrefab;
     
     public string websocketURL;
     
@@ -29,7 +31,20 @@ public class CogStreamManager : MonoBehaviour
 
              string address = await mediatorClient.StartEngine(engine);
 
-            ImageSenderComponent.Launcher(address);
+             GameObject selectedEngine = null;
+             if (engine.name == "yolov5")
+             {
+                 selectedEngine = yoloEnginePrefab;
+             }
+             else if (engine.name == "fermx")
+             {
+                 selectedEngine = emotionEnginePrefab;
+             }
+
+             GameObject go = Instantiate(selectedEngine);
+             HLImageSenderComponent imageSenderComponent = go.GetComponent<HLImageSenderComponent>();
+             
+             imageSenderComponent.Launcher(address);
         }
     }
 

@@ -55,7 +55,7 @@ namespace CognitiveXR.Cpop
             await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("cpop").Build());
         }
 
-        protected void DefaultCpopMessageHandlerJson(MqttApplicationMessageReceivedEventArgs e)
+        private void DefaultCpopMessageHandlerJson(MqttApplicationMessageReceivedEventArgs e)
         {
             try
             {

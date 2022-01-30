@@ -30,30 +30,27 @@ public class HLImageSenderComponent : MonoBehaviour
     private HoloLensCameraStream.VideoCapture videoCapture;
     private byte[] latestImageBytes;
     private HoloLensCameraStream.Resolution resolution;
-    private CancellationTokenSource cancellationTokenSource;
+    private ResultReceiveChannel receiveChannel;
     private string engineAddress;
     
     [Header("Debug")]
-    public bool debugConnect = false;
-
     [SerializeField] private bool ShowDebugCameraImage = true;
     
     private GameObject _picture;
     private Renderer _pictureRenderer;
     private Texture2D _pictureTexture;
     
-    private class SampleStruct
+    public class SampleStruct
     {
+        public HoloLensCameraStream.Resolution resolution;
         public Matrix4x4 camera2WorldMatrix, projectionMatrix;
         public Pose cameraPose;
     }
 
+    // cached spatial info of last send frame
     private SampleStruct spatialInfo;
-        
-    public delegate void OnEmotionDetectedDelegate(EmotionBox.EmotionInfo info);
-    public OnEmotionDetectedDelegate OnEmotionDetected;
     
-
+    // used to only send one frame at a time
     private bool receivedNewFrame = true;
 
     public void Launcher(string engineAddress)
@@ -148,67 +145,37 @@ public class HLImageSenderComponent : MonoBehaviour
         };
 
         JpgSendChannel sendChannel = new JpgSendChannel(resolution.width, resolution.height);
-        FaceReceiveChannel faceReceiveChannel = new FaceReceiveChannel();
 
-        engineClient = new EngineClient(streamSpec, sendChannel, faceReceiveChannel);
+        engineClient = new EngineClient(streamSpec, sendChannel, receiveChannel);
         engineClient.Open();
-
-        cancellationTokenSource = new CancellationTokenSource();
-        Task.Run(UpdateFaceEngineResults, cancellationTokenSource.Token);
     }
-    
-    private async void UpdateFaceEngineResults()
+
+    public EngineClient GetEngine()
     {
-        FaceReceiveChannel receiveChannel = engineClient?.GetReceiveChannel<FaceReceiveChannel>();
-        if (receiveChannel == null) return;
+        return engineClient;
+    }
 
-        while (!cancellationTokenSource.IsCancellationRequested)
+    public SampleStruct GetSample()
+    {
+        return spatialInfo;
+    }
+
+    public void SetReceiveChannel(ResultReceiveChannel receiveChannel)
+    {
+        this.receiveChannel = receiveChannel;
+    }
+
+    public void SetReceivedNewFrame(bool newValue)
+    {
+        lock (this)
         {
-            List<FaceEngineResult> faceEngineResults = await receiveChannel.Next<FaceEngineResult>();
-
-            lock (this)
-            {
-                receivedNewFrame = true;
-            }
-
-            foreach (FaceEngineResult engineResult in faceEngineResults)
-            {
-                if (engineResult.emotions.Count > 0)
-                {
-
-                    SampleStruct s = spatialInfo;
-
-                    Vector3 pos1 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
-                        resolution,
-                        new Vector2(engineResult.face[0], engineResult.face[1]));
-                    Vector3 pos2 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
-                        resolution,
-                        new Vector2(engineResult.face[0], engineResult.face[1] + engineResult.face[3]));
-                    Vector3 pos4 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
-                        resolution,
-                        new Vector2(engineResult.face[0] + engineResult.face[2], engineResult.face[1]));
-                    Vector3 pos3 = LocatableCameraUtils.PixelCoordToWorldCoord(s.camera2WorldMatrix, s.projectionMatrix,
-                        resolution,
-                        new Vector2(engineResult.face[0] + engineResult.face[2],
-                            engineResult.face[1] + engineResult.face[3]));
-
-                    OnEmotionDetected(new EmotionBox.EmotionInfo()
-                    {
-                        Bounds = new List<Vector3>()
-                        {
-                            pos1, pos2, pos3, pos4
-                        },
-                        DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
-                        frameId = engineResult.frameId,
-                        cameraPose = s.cameraPose
-                    });
-                }
-            }
+            receivedNewFrame = newValue;
         }
     }
-    
+
     void OnFrameSampleAcquired(VideoCaptureSample sample)
     {
+        // only send one frame at a time and wait for an answer before sending the next one
          lock (this)
          {
              if(receivedNewFrame == false)
@@ -235,8 +202,10 @@ public class HLImageSenderComponent : MonoBehaviour
          Matrix4x4 projectionMatrix = new Matrix4x4();
 #endif
 
+        // cache the camera
          SampleStruct s = new SampleStruct
          {
+             resolution = resolution,
              camera2WorldMatrix = camera2WorldMatrix,
              projectionMatrix = projectionMatrix,
              cameraPose = new Pose(Camera.main.transform.position, Camera.main.transform.rotation)
@@ -255,10 +224,7 @@ public class HLImageSenderComponent : MonoBehaviour
 
          if (frameId.HasValue)
          {
-             lock (this)
-             {
-                 receivedNewFrame = false;
-             }
+             SetReceivedNewFrame(false);
              spatialInfo = s;
          }
         

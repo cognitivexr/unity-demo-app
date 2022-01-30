@@ -453,7 +453,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1316338944}
   - component: {fileID: 1316338943}
-  - component: {fileID: 1316338945}
   m_Layer: 0
   m_Name: ControlObject
   m_TagString: Untagged
@@ -487,74 +486,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1316338945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1316338942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45b3eff181cc4244a8a14234096e62fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isFocusRequired: 0
-  keywords:
-  - keyword: Hide
-    response:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: SetActive
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-        - m_Target: {fileID: 0}
-          m_MethodName: set_Active
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - keyword: Show
-    response:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: SetActive
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-        - m_Target: {fileID: 0}
-          m_MethodName: set_Active
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  persistentKeywords: 0
-  speechConfirmationTooltipPrefab: {fileID: 0}
 --- !u!1001 &1719994794
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -692,9 +623,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7084274507137377451, guid: 47417d529a26dfb4ab1cf2c63a2271a5,
         type: 3}
+      propertyPath: yoloEnginePrefab
+      value: 
+      objectReference: {fileID: 1780930507253709687, guid: 66bf6741b6b519f499172adfd48b8f0b,
+        type: 3}
+    - target: {fileID: 7084274507137377451, guid: 47417d529a26dfb4ab1cf2c63a2271a5,
+        type: 3}
       propertyPath: EngineSelectionMenu
       value: 
       objectReference: {fileID: 1237429725}
+    - target: {fileID: 7084274507137377451, guid: 47417d529a26dfb4ab1cf2c63a2271a5,
+        type: 3}
+      propertyPath: emotionEnginePrefab
+      value: 
+      objectReference: {fileID: 7598940672489259160, guid: d1e3711426930f44198fd81022115bf9,
+        type: 3}
     - target: {fileID: 7084274507137377451, guid: 47417d529a26dfb4ab1cf2c63a2271a5,
         type: 3}
       propertyPath: ImageSenderComponent
