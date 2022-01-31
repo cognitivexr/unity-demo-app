@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7598940672489259163}
   - component: {fileID: 6212167163487714935}
   m_Layer: 0
-  m_Name: HololensCameraStream
+  m_Name: EmotionDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,6 +70,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0cd0e6d65e2acb47afede1f0fa47012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EmotionBoxPrefab: {fileID: 3856199848746573567, guid: 2792e0bbeda38d242b83fc31c8e1a37e,
+  BoundingBoxPrefab: {fileID: 3856199848746573567, guid: 2792e0bbeda38d242b83fc31c8e1a37e,
     type: 3}
   imageSenderComponent: {fileID: 7598940672489259163}

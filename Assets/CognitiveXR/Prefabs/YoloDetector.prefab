@@ -70,5 +70,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549fb1ebb7bab6544ad59dc5ab8ee36c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EmotionBoxPrefab: {fileID: 0}
+  BoundingBoxPrefab: {fileID: 3856199848746573567, guid: 2792e0bbeda38d242b83fc31c8e1a37e,
+    type: 3}
   imageSenderComponent: {fileID: 9042815327719818369}

@@ -141,7 +141,7 @@ public class HLImageSenderComponent : MonoBehaviour
                 .Set("format.width", resolution.width.ToString())
                 .Set("format.height", resolution.height.ToString())
                 .Set("format.colorMode", "4")
-                .Set("format.orientation", "3")
+                .Set("format.orientation", "4")
         };
 
         JpgSendChannel sendChannel = new JpgSendChannel(resolution.width, resolution.height);

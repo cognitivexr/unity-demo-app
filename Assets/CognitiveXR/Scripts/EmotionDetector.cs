@@ -11,7 +11,7 @@ public class EmotionDetector : MonoBehaviour
     [SerializeField] private HLImageSenderComponent imageSenderComponent;
     private readonly List<BoundingBox> spawnedBoxes = new List<BoundingBox>();
 
-    private ConcurrentQueue<EmotionBox.EmotionInfo> receivedEmotionDetectedEvents = new ConcurrentQueue<EmotionBox.EmotionInfo>();
+    private ConcurrentQueue<BoundingBox.BoundingBoxInfo> receivedEmotionDetectedEvents = new ConcurrentQueue<BoundingBox.BoundingBoxInfo>();
 
     private void Start()
     {
@@ -53,13 +53,13 @@ public class EmotionDetector : MonoBehaviour
                         new Vector2(engineResult.face[0] + engineResult.face[2],
                             engineResult.face[1] + engineResult.face[3]));
                     
-                    receivedEmotionDetectedEvents.Enqueue(new EmotionBox.EmotionInfo()
+                    receivedEmotionDetectedEvents.Enqueue(new BoundingBox.BoundingBoxInfo()
                     {
                         Bounds = new List<Vector3>()
                         {
                             pos1, pos2, pos3, pos4
                         },
-                        DominantEmotion = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
+                        text = engineResult.emotions.Select(x => (x.probability, x)).Max().x.label,
                         frameId = engineResult.frameId,
                         cameraPose = s.cameraPose
                     });
@@ -70,29 +70,17 @@ public class EmotionDetector : MonoBehaviour
     
     private void Update()
     {
-        while (receivedEmotionDetectedEvents.TryDequeue(out EmotionBox.EmotionInfo info))
+        while (receivedEmotionDetectedEvents.TryDequeue(out BoundingBox.BoundingBoxInfo info))
         {
             CleanupOldEmotionBoxes(info.frameId);
 
-            GameObject emotionBoxGO = Instantiate(BoundingBoxPrefab, info.cameraPose.position, Quaternion.identity);
+            GameObject boundingBoxGO = Instantiate(BoundingBoxPrefab, info.cameraPose.position, Quaternion.identity);
 
-            BoundingBox emotionBox = emotionBoxGO.GetComponent<BoundingBox>();
+            BoundingBox boundingBox = boundingBoxGO.GetComponent<BoundingBox>();
 
-            emotionBox.SetLabel(info.DominantEmotion);
-            
-            Vector3 center = Vector3.zero;
-            foreach (Vector3 pos in info.Bounds)
-            {
-                center += pos;
-            }
-
-            center /= info.Bounds.Count;
-
-            emotionBox.SetPosition(center);
-
-            emotionBox.frameId = info.frameId;
+            boundingBox.Set(info);
         
-            spawnedBoxes.Add(emotionBox);
+            spawnedBoxes.Add(boundingBox);
         }
     }
 
@@ -102,7 +90,7 @@ public class EmotionDetector : MonoBehaviour
         {
             if(spawnedBox == null) continue;
             
-            if (spawnedBox.frameId < newFrameId)
+            if (spawnedBox.Info.frameId < newFrameId)
             {
                 Destroy(spawnedBox.gameObject);
             }
