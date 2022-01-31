@@ -198,9 +198,9 @@ GameObject:
   - component: {fileID: 3856199848746573536}
   - component: {fileID: 3856199848746573537}
   - component: {fileID: 3856199848746573566}
-  - component: {fileID: 3856199848746573538}
+  - component: {fileID: -3577336361303621413}
   m_Layer: 0
-  m_Name: EmotionBox
+  m_Name: BoundingBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -348,7 +348,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   m_UseWorldSpace: 0
   m_Loop: 0
---- !u!114 &3856199848746573538
+--- !u!114 &-3577336361303621413
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -357,11 +357,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3856199848746573567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dd329c7c3eff2a46a593f3476346740, type: 3}
+  m_Script: {fileID: 11500000, guid: 71a1ac735c7f58341bc49965938ca177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 3856199848746573566}
-  emotionTextField: {fileID: 3334448658473409274}
+  label: {fileID: 0}
   c1: {fileID: 882182051626241927}
   c2: {fileID: 380481967132010526}
   c3: {fileID: 3158324405454260943}
