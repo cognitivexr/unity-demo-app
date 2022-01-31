@@ -20,3 +20,9 @@ CogStream Example
 Scene: CogStreamExample.unity
 
 This example retrives available engines from the mediator, sends images from the hololens 2 to a fermx engine and retrives the 3d information of faces and emotions.
+
+License
+-------
+
+* Microsoft MRTK is licensed under the MIT License
+* Unity is propriatary software and has [custom licenses](https://support.unity.com/hc/en-us/categories/201268913-Licenses)
